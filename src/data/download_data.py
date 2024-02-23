@@ -32,10 +32,10 @@ def download_file(url, directory, fname=''):
         # open a file in binary write mode and save the content to the file
         with open(file_path, 'wb') as file:
             file.write(response.content)
-        logger.info(f"Downloaded {file_name} to {directory}")
+        logger.info(f"Downloaded {url} to {file_path}")
     else:
         logger.error(
-            f"Failed to download {file_name} to {directory}. Status code: {response.status_code}")
+            f"Failed to download {url} to {file_path}. Status code: {response.status_code}")
 
 def download_NAPS_dataset(data_file_path, raw_data_dir):
     """
@@ -61,17 +61,18 @@ def download_NAPS_dataset(data_file_path, raw_data_dir):
         
         download_file(row['url'], year_directory)
 
-def download_station_data(info_file_path, raw_data_dir):
+def download_station_data(info_file_path, raw_data_dir, stations_raw_csv):
     """
     Download the NAPS-provided station data.
     - inputs:
         - info_file_path: a file path (string) to the file of the programming info files
         - raw_data_dir: a directory path (string) to the downloaded data
+        - stations_raw_csv: a file name (string) to save the raw stations data.
     """
     url_df = pd.read_csv(info_file_path)
     station_file_url = url_df.loc[url_df['type'] == 'stations', ['url']].squeeze()
     
-    download_file(station_file_url, raw_data_dir, station_file_url.split('%2F')[-1])
+    download_file(station_file_url, raw_data_dir, str(stations_raw_csv).split('%2F')[-1])
 
 def ensure_directory_exists(directory: Path):
     """
