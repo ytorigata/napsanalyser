@@ -3,6 +3,7 @@ import pandas as pd
 from pathlib import Path
 import requests
 from zipfile import ZipFile
+from src.data.file_operation import ensure_directory_exists
 from src.utils.logger_config import setup_logger
 
 logger = setup_logger('data.download_data', 'download_data.log')
@@ -73,12 +74,6 @@ def download_station_data(info_file_path, raw_data_dir, stations_raw_csv):
     station_file_url = url_df.loc[url_df['type'] == 'stations', ['url']].squeeze()
     
     download_file(station_file_url, raw_data_dir, str(stations_raw_csv).split('%2F')[-1])
-
-def ensure_directory_exists(directory: Path):
-    """
-    Ensure the directory exists, create it if it does not.
-    """
-    directory.mkdir(parents=True, exist_ok=True)
 
 def unzip_NAPS_dataset(data_file_path, raw_data_dir):
     """
