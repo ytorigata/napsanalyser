@@ -1,6 +1,32 @@
 import pandas as pd
 import re
-from src.config import COLUMN_NAMES
+from src.config import ABBREVIATION_CSV, COLUMN_NAMES
+
+def convert_micro_to_nano(df, columns):
+    """
+    Convert unit from micro to nano in specified columns.
+    - inputs:
+        - df: a DataFrame
+        - columns: a list of column names (string)
+    - output: converted_df: a DataFrame with columns which have converted units
+    """
+    converted_df = pd.DataFrame(df)
+    for col in columns:
+        tmp_df = df[col] * 10 ** 3
+        converted_df.loc[:, [col]] = tmp_df
+    return converted_df
+
+def get_abbreviation_dict():
+    """
+    Return a diction with full names of elements as keys and their abbreviations as values.
+    - output:
+        - abb_dict: a dictionary of keys (element full name) and values (abbreviation)
+    """
+    abb_df = pd.read_csv(ABBREVIATION_CSV)
+    column_keys = 'full_name'
+    column_values = 'abbreviation'
+    abb_dict = pd.Series(abb_df[column_values].values, index=abb_df[column_keys]).to_dict()
+    return abb_dict
 
 def remove_parentheses(text):
     return re.sub(r'\s*\([^)]*\)', '', text)
@@ -19,3 +45,4 @@ def rename_columns(df, TEMPLATE=COLUMN_NAMES):
     dict_col = dict(zip(col_names_df.old_name, col_names_df.new_name))
     renamed_df = df.rename(columns=dict_col, errors = 'ignore')
     return renamed_df
+
