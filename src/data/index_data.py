@@ -481,9 +481,7 @@ def index_dataset_attributes(DATA_URLS_FILE, INDEX_CSV, RAW_DIR):
     metadata_df = pd.DataFrame.from_records(rows_list)
     metadata_df.sort_values(['year', 'site_id', 'element'], inplace=True)
     metadata_df = metadata_df.reset_index(drop=True)
-    metadata_df.to_csv(INDEX_CSV)
-    
-    display(metadata_df.head(3))
+    metadata_df.to_csv(INDEX_CSV, index=False)
 
 def apply_manually_checked_frequency(index_df, CHECKED_FREQUENCY, INDEX_CSV):
     """
@@ -510,9 +508,7 @@ def apply_manually_checked_frequency(index_df, CHECKED_FREQUENCY, INDEX_CSV):
     # drop the temporary '_new' column
     updated_df = df_merged.drop(columns=['frequency_new'])
     
-    # save the updated index DataFrame
-    updated_df.to_csv(INDEX_CSV)
-    
+    updated_df.to_csv(INDEX_CSV, index=False)
     return updated_df
     
 def drop_entries_with_too_few_measurements(index_df, INDEX_CSV):
@@ -547,10 +543,8 @@ def drop_entries_with_too_few_measurements(index_df, INDEX_CSV):
             (index_df['year'] == 2017) & 
             (index_df['site_id'] == 60610) & 
             (index_df['element_form'] == 'total'))].index)
-
-    # save the updated index DataFrame
-    index_df.to_csv(INDEX_CSV)
     
+    index_df.to_csv(INDEX_CSV, index=False)
     return index_df
 
 def update_index_with_major_frequency(index_df, INDEX_CSV):
@@ -572,7 +566,5 @@ def update_index_with_major_frequency(index_df, INDEX_CSV):
                 (index_df['site_id'] == 129003) & 
                 (index_df['element_form'] == 'NT'), ['frequency']] = 3
     
-    # save the updated index DataFrame
-    index_df.to_csv(INDEX_CSV)
-    
+    index_df.to_csv(INDEX_CSV, index=False)
     return index_df
