@@ -1,7 +1,8 @@
 
 logs/
 data/raw/
-data/processed
+data/processed/
+output_image/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

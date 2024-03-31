@@ -8,6 +8,7 @@ CONFIG_DIR = DATA_DIR / 'config'
 RAW_DIR = DATA_DIR / 'raw'
 METADATA_DIR = DATA_DIR / 'metadata'
 PROCESSED_DIR = DATA_DIR / 'processed'
+OUTPUT_IMG_DIR = DATA_DIR / 'output_image'
 
 # key files
 DATA_URLS_FILE = CONFIG_DIR / 'data_urls.csv'
