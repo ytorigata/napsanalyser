@@ -169,9 +169,9 @@ def extract_pre_2010():
             if len(datafile) > 0:
                 datafile.to_csv(str(PROCESSED_DIR) + '/' + str(year) + '_' + str(site_id) + '.csv', index = False)
             
-            # extract ions data for the same site only in case ICPMS data exists
+            # extract ions data for the same site even if ICPMS data does not exist
             ion_df = site_df[site_df['instrument'] == 'IC']
-            if (len(icpms_df) > 0) & (len(ion_df) > 0):
+            if (len(ion_df) > 0):
                 
                 file_path_ion = get_IC_file_path(year, site_id)
                 
