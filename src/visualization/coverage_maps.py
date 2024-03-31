@@ -21,6 +21,29 @@ def color_nt_ws(value):
         color = ''
     return 'background-color: %s' % color
 
+
+def color_percentage(value):
+    """
+    Return colour setting for a table stye based on the percentage.
+    Green: >= 75%, Yellow: >= 50%, Red: >= 0, Grey: = 0.
+    - input: value (float) of the percentage
+    - output: colour setting for the style (string)
+    """
+    if isinstance(value, str) | isinstance(value, int):
+        color = ''
+    elif value >= 75.0:
+        color = '#3dd7bf'
+    elif value >= 50.0:
+        color = '#ffd872'
+    elif value > 0:
+        color = '#ff828b'
+    elif value == 0:
+        color = '#999999'
+    else:
+        color = ''
+    return 'background-color: %s' % color
+
+
 def visualize_coverage_by_site_and_year(element=''):
     """
     Display a table of coverage of the data set.
