@@ -58,7 +58,7 @@ def get_years_for_site(site_id, element, element_form):
     Rreturns years associated with a specified NAPS site ID.
     - inputs:
         site_id: NAPS site ID (int)
-        element: NAPS site ID (int)
+        element: a full name (string) of element
     - output: years: a list of years (int)
     """
     index_df = pd.read_csv(INDEX_CSV)
