@@ -137,3 +137,35 @@ def get_all_years_metadata_for_all_sites(element, instrument, element_form='anyt
         ]
     
     return filtered_df
+
+
+def get_pm25_metadata_for_all_years(instrument, site_ids=[0], element_form=''):
+    """
+    Rreturns all combinations of year and site for PM2.5 data.
+    - inputs:
+        - instrument: 'ICPMS' or 'IC' (string)
+        - site_ids: a list of NAPS Site ID (int). If not specified, return the metadata for all sites.
+        - element_form: 'NT' for Near Total metals, 'WS' for Water-soluble metals, 
+            or 'total' for ions
+    - output: filtered_df: a DataFrame subset of the index file
+    """
+    index_df = pd.read_csv(INDEX_CSV)
+
+    # subset metadata for specific sites
+    if site_ids != [0]:
+        index_df = index_df[index_df['site_id'].isin(site_ids)]
+    
+    filtered_df = pd.DataFrame()
+
+    if element_form == '':
+        filtered_df = index_df[(
+            index_df['instrument'] == instrument)
+        ]
+    else:
+        filtered_df = index_df[(
+            index_df['instrument'] == instrument) & (
+                index_df['element_form'] == element_form)
+        ]
+        
+    filtered_df = filtered_df[['year', 'site_id', 'element_form', 'instrument', 'frequency']].drop_duplicates()
+    return filtered_df
