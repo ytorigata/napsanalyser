@@ -72,3 +72,56 @@ def get_years_for_site(site_id, element, element_form):
     unique_years_list = unique_years.tolist()
 
     return unique_years_list
+
+
+def get_all_years_metadata_for_site(site_id, element, element_form='anything'):
+    """
+    Rreturns metadata for all years associated with a specified NAPS site ID, 
+    element, and element form.
+    - inputs:
+        site_id: NAPS site ID (int)
+        element: a full name (string) of element
+        element_form: 'NT' for Near Total metals, 'WS' for Water-soluble metals, or 'total' for ions
+    - output: filtered_df: a DataFrame subset of the index file
+    """
+    index_df = pd.read_csv(INDEX_CSV)
+    filtered_df = pd.DataFrame()
+
+    if element_form == 'anything':
+        filtered_df = index_df[(
+            index_df['site_id'] == site_id) & (
+                index_df['element'] == element)
+        ]
+    else:
+        filtered_df = index_df[(
+            index_df['site_id'] == site_id) & (
+                index_df['element'] == element) & (
+                index_df['element_form'] == element_form)
+        ]
+    
+    return filtered_df
+
+
+def get_all_years_metadata_for_all_sites(element, element_form='anything'):
+    """
+    Rreturns metadata for all years associated with element and element form 
+    for all sites which have available data.
+    - inputs:
+        element: a full name (string) of element
+        element_form: 'NT' for Near Total metals, 'WS' for Water-soluble metals, or 'total' for ions
+    - output: filtered_df: a DataFrame subset of the index file
+    """
+    index_df = pd.read_csv(INDEX_CSV)
+    filtered_df = pd.DataFrame()
+    
+    if element_form == 'anything':
+        filtered_df = index_df[(
+            index_df['element'] == element)
+        ]
+    else:
+        filtered_df = index_df[(
+            index_df['element'] == element) & (
+                index_df['element_form'] == element_form)
+        ]
+    
+    return filtered_df
