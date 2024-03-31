@@ -106,13 +106,15 @@ def get_all_years_metadata_for_site(site_id, element, element_form='anything'):
     return filtered_df
 
 
-def get_all_years_metadata_for_all_sites(element, element_form='anything'):
+def get_all_years_metadata_for_all_sites(element, instrument, element_form='anything'):
     """
-    Rreturns metadata for all years associated with element and element form 
-    for all sites which have available data.
+    Rreturns metadata for all years associated with element, instrument, and 
+    element form for all sites which have available data.
     - inputs:
-        element: a full name (string) of element
-        element_form: 'NT' for Near Total metals, 'WS' for Water-soluble metals, or 'total' for ions
+        - element: a full name (string) of element
+        - instrument: 'ICPMS' or 'IC' (string)
+        - element_form: 'NT' for Near Total metals, 'WS' for Water-soluble metals, 
+            or 'total' for ions
     - output: filtered_df: a DataFrame subset of the index file
     """
     index_df = pd.read_csv(INDEX_CSV)
@@ -120,11 +122,13 @@ def get_all_years_metadata_for_all_sites(element, element_form='anything'):
     
     if element_form == 'anything':
         filtered_df = index_df[(
-            index_df['element'] == element)
+            index_df['element'] == element) & (
+                index_df['instrument'] == instrument)
         ]
     else:
         filtered_df = index_df[(
             index_df['element'] == element) & (
+                index_df['instrument'] == instrument) & (
                 index_df['element_form'] == element_form)
         ]
     
