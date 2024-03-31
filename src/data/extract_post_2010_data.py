@@ -183,9 +183,9 @@ def extract_file(file_path, meta_df):
         merged_df = pm25_df.merge(metal_df, on=['site_id', 'sampling_date', 'sampling_type', 'sampler'])
         icpms_df = pd.concat([icpms_df, merged_df], ignore_index=True)
         
-    # extract ion data if ICPMS measured data exsit
+    # extract ion data even if ICPMS measured data does not exsit
     ic_df = pd.DataFrame()
-    if (len(icpms_df) > 0) & ('Ions-Spec_IC' in book.sheetnames):
+    if ('Ions-Spec_IC' in book.sheetnames):
         ic_df = extract_ion_2010(book['Ions-Spec_IC'])
         ic_df = rename_columns(ic_df)
     
