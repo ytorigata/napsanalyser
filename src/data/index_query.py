@@ -2,6 +2,26 @@ import pandas as pd
 from src.config import INDEX_CSV
 
 
+def get_all_ions():
+    """
+    Return a list of all ion names in the index file.
+    - output: ion_list: a list of ions' full names (string)
+    """
+    ion_df = index_df[(index_df['instrument'] == 'IC')]
+    ion_list = ion_df['element'].unique().tolist()
+    return ion_list
+
+
+def get_all_metals():
+    """
+    Return a list of all trace metal names in the index file.
+    - output: metal_list: a list of metals' full names (string)
+    """
+    metal_df = index_df[(index_df['instrument'] == 'ICPMS')]
+    metal_list = metal_df['element'].unique().tolist()
+    return metal_list
+
+
 def get_sites_for_year(year, element='', element_form=''):
     """
     Return a list of unique NAPS site IDs associated with a specified year.
