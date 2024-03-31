@@ -51,6 +51,7 @@ Sodium,sodium
 Strontium,strontium
 Sulphate,sulphate
 Speciation Mass (ug/m3),PM2.5
+Mass,PM2.5
 NAPS ID,site_id
 DATE,sampling_date
 Date,sampling_date
