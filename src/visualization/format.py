@@ -1,3 +1,6 @@
+import pandas as pd
+from src.config import STATIONS_CSV
+
 def format_float(val, n=2):
     """
     Return a given value with n decimal places.
@@ -14,3 +17,16 @@ def format_float(val, n=2):
         return format_str.format(val)
     else:
         return val
+
+
+def get_naps_station_name(site_id):
+    """
+    Return a NAPS site name from its site ID. The name should be titled.
+    e.g., BURNABY SOUTH should be converted to Burnabe South.
+    - input: site_id: NAPS site ID (int)
+    - output: titled_station_name: NAPS station name (string) in titled format
+    """
+    stations = pd.read_csv(STATIONS_CSV)
+    station_name = stations.loc[stations['site_id'] == site_id, 'station_name'].iloc[0]
+    titled_station_name = station_name.title()
+    return titled_station_name
