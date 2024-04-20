@@ -30,3 +30,23 @@ def get_naps_station_name(site_id):
     station_name = stations.loc[stations['site_id'] == site_id, 'station_name'].iloc[0]
     titled_station_name = station_name.title()
     return titled_station_name
+
+
+def split_df(func, df):
+    """
+    Halve the length of a given DataFrame and call a given function 
+    to display (and/or save) a long table.
+    - inputs:
+        - df: a DataFrame
+        - func: any function for display of a DataFrame
+    - outputs: (none; display two DataFrames)
+    """
+    split_idx = len(df) // 2
+    upper_df = df.iloc[:split_idx]
+    lower_df = df.iloc[split_idx:]
+
+    upper_result = func(upper_df)
+    lower_result = func(lower_df)
+    
+    return upper_result, lower_result
+
