@@ -11,6 +11,7 @@ def get_all_ions():
     
     ion_df = index_df[(index_df['instrument'] == 'IC')]
     ion_list = ion_df['element'].unique().tolist()
+    ion_list.sort()
     return ion_list
 
 
@@ -23,6 +24,7 @@ def get_all_metals():
     
     metal_df = index_df[(index_df['instrument'] == 'ICPMS')]
     metal_list = metal_df['element'].unique().tolist()
+    metal_list.sort()
     return metal_list
 
 
@@ -57,6 +59,7 @@ def get_sites_for_year(year, element='', element_form=''):
     site_ids = sites_for_year_df['site_id'].sort_values().unique()
     return site_ids
 
+
 def get_years_for_site(site_id, element, element_form):
     """
     Rreturns years associated with a specified NAPS site ID.
@@ -78,68 +81,36 @@ def get_years_for_site(site_id, element, element_form):
     return unique_years_list
 
 
-def get_all_years_metadata_for_site(site_id, element, instrument, element_form='anything'):
+def get_all_years_metadata(element, instrument, element_form=None, site_id=None):
     """
-    Rreturns metadata for all years associated with a specified NAPS site ID, 
-    element, and element form.
-    - inputs:
-        - site_id: NAPS site ID (int)
-        - element: a full name (string) of element
-        - instrument: 'ICPMS' or 'IC' (string)
-        - element_form: 'NT' for Near Total metals, 'WS' for Water-soluble metals, 
-            or 'total' for ions
-    - output: filtered_df: a DataFrame subset of the index file
-    """
-    index_df = pd.read_csv(INDEX_CSV)
-    filtered_df = pd.DataFrame()
-
-    if element_form == 'anything':
-        filtered_df = index_df[(
-            index_df['site_id'] == site_id) & (
-                index_df['element'] == element) & (
-                index_df['instrument'] == instrument)
-        ]
-    else:
-        filtered_df = index_df[(
-            index_df['site_id'] == site_id) & (
-                index_df['element'] == element) & (
-                index_df['instrument'] == instrument) & (
-                index_df['element_form'] == element_form)
-        ]
-    
-    return filtered_df
-
-
-def get_all_years_metadata_for_all_sites(element, instrument, element_form='anything'):
-    """
-    Rreturns metadata for all years associated with element, instrument, and 
-    element form for all sites which have available data.
+    Rreturns metadata for all years associated with a given element, instrument, 
+    and element form (option) for a specified NAPS site ID (option)
     - inputs:
         - element: a full name (string) of element
         - instrument: 'ICPMS' or 'IC' (string)
         - element_form: 'NT' for Near Total metals, 'WS' for Water-soluble metals, 
-            or 'total' for ions
-    - output: filtered_df: a DataFrame subset of the index file
+            or 'total' for ions; optional
+        - site_id: NAPS site ID (int); optional
+    - output: a DataFrame filtered
     """
     index_df = pd.read_csv(INDEX_CSV)
-    filtered_df = pd.DataFrame()
     
-    if element_form == 'anything':
-        filtered_df = index_df[(
-            index_df['element'] == element) & (
-                index_df['instrument'] == instrument)
-        ]
-    else:
-        filtered_df = index_df[(
-            index_df['element'] == element) & (
-                index_df['instrument'] == instrument) & (
-                index_df['element_form'] == element_form)
-        ]
+    # start with a mask that selects all rows
+    mask = pd.Series([True] * len(index_df))
+
+    mask = mask & (
+        index_df['element'] == element) & (
+        index_df['instrument'] == instrument)
     
-    return filtered_df
+    if element_form is not None:
+        mask = mask & (index_df['element_form'] == element_form)
+    if site_id is not None:
+        mask = mask & (index_df['site_id'] == site_id)
+    
+    return index_df[mask]
 
 
-def get_pm25_metadata_for_all_years(instrument, site_ids=[0], element_form=''):
+def get_all_years_pm25_metadata(instrument, element_form=None, site_ids=None):
     """
     Rreturns all combinations of year and site for PM2.5 data.
     - inputs:
@@ -151,21 +122,18 @@ def get_pm25_metadata_for_all_years(instrument, site_ids=[0], element_form=''):
     """
     index_df = pd.read_csv(INDEX_CSV)
 
-    # subset metadata for specific sites
-    if site_ids != [0]:
-        index_df = index_df[index_df['site_id'].isin(site_ids)]
+    # start with a mask that selects all rows
+    mask = pd.Series([True] * len(index_df))
+    mask = mask & (index_df['instrument'] == instrument)
     
-    filtered_df = pd.DataFrame()
+    if site_ids is not None:
+        mask = mask & (index_df[index_df['site_id'].isin(site_ids)])
 
-    if element_form == '':
-        filtered_df = index_df[(
-            index_df['instrument'] == instrument)
-        ]
-    else:
-        filtered_df = index_df[(
-            index_df['instrument'] == instrument) & (
-                index_df['element_form'] == element_form)
-        ]
-        
+    if element_form is not None:
+        mask = mask & (index_df['element_form'] == element_form)
+    
+    filtered_df = index_df[mask]
+
+    # for PM2.5, there would be many overlap in rows because index data is for elements 
     filtered_df = filtered_df[['year', 'site_id', 'element_form', 'instrument', 'frequency']].drop_duplicates()
     return filtered_df
