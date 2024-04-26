@@ -13,17 +13,17 @@ from src.utils.logger_config import setup_logger
 
 logger = setup_logger('data.extract_pre_2010_data', 'extract_data.log')
 
-def get_ICPMS_file_path(year, site_id, element_form):
+def get_ICPMS_file_path(year, site_id, analyte_type):
     """
     Return a file path to the ICP-MS measured data (2003-2009).
     - inputs:
         - year: year of the data (int)
         - site_id: NAPS site ID (int)
-        - element_form: 'NT' (Near Total) or 'WS' (Water-soluble) (string)
+        - analyte_type: 'NT' (Near Total) or 'WS' (Water-soluble) (string)
     - output: file_path (string)
     """
     file_name = 'S' + str(site_id)
-    if element_form == 'NT':
+    if analyte_type == 'NT':
         file_name += '_ICPMS.XLS'
     else:
         file_name += '_WICPMS.XLS'
@@ -92,17 +92,17 @@ def sheet_array_to_df(nested_array, site_id):
     
     return datafile
     
-def sheet_df_to_metal_df(datafile, element_form):
+def sheet_df_to_metal_df(datafile, analyte_type):
     """
     Convert a 2D array which contains a worksheet data to the DataFrame for metal data
     - input:
         - datafile: DataFrame containing rows which contains cells
-        - element_form: 'NT' for Near Total or 'WS' for Water-soluble (string)
+        - analyte_type: 'NT' for Near Total or 'WS' for Water-soluble (string)
     - output:
         datafile: pandas DataFrame
     """
     datafile = rename_columns(datafile)
-    datafile['element_form'] = element_form
+    datafile['analyte_type'] = analyte_type
     datafile['sampler'] = None
     return datafile
 
@@ -125,7 +125,7 @@ def sheet_df_to_ion_df(datafile):
     
     datafile = rename_columns(datafile, COLUMN_NAMES_PRE_2010_IONS)
     
-    datafile['element_form'] = 'total'
+    datafile['analyte_type'] = 'total'
     datafile['sampler'] = None
     return datafile
 
@@ -142,7 +142,7 @@ def extract_pre_2010():
         # unique site list for the year
         index_df = pd.read_csv(INDEX_CSV)
         sites_for_year_df = index_df[index_df['year'] == year]
-        unique_combinations = sites_for_year_df[['year', 'site_id', 'element_form', 'instrument']].drop_duplicates()
+        unique_combinations = sites_for_year_df[['year', 'site_id', 'analyte_type', 'instrument']].drop_duplicates()
         unique_combinations.reset_index(drop=True, inplace=True)
         
         site_ids = get_sites_for_year(year)
@@ -154,11 +154,11 @@ def extract_pre_2010():
             datafile = pd.DataFrame()
             for idx, row in icpms_df.iterrows():
                 
-                file_path_metal = get_ICPMS_file_path(year, site_id, row['element_form'])
+                file_path_metal = get_ICPMS_file_path(year, site_id, row['analyte_type'])
                 
                 metal_vals = extract_sheet_values(file_path_metal, year)
                 sheet_df = sheet_array_to_df(metal_vals, site_id).reset_index(drop=True)
-                metal_df = sheet_df_to_metal_df(sheet_df, row['element_form']).reset_index(drop=True)
+                metal_df = sheet_df_to_metal_df(sheet_df, row['analyte_type']).reset_index(drop=True)
                 
                 logger.debug(f'\t{ file_path_metal[file_path_metal.rindex("/") + 1:] }')
                 

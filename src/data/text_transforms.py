@@ -18,9 +18,9 @@ def convert_micro_to_nano(df, columns):
 
 def get_abbreviation_dict():
     """
-    Return a diction with full names of elements as keys and their abbreviations as values.
+    Return a diction with full names of analytes as keys and their abbreviations as values.
     - output:
-        - abb_dict: a dictionary of keys (element full name) and values (abbreviation)
+        - abb_dict: a dictionary of keys (analyte full name) and values (abbreviation)
     """
     abb_df = pd.read_csv(ABBREVIATION_CSV)
     column_keys = 'full_name'

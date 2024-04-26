@@ -1,4 +1,4 @@
-﻿year,site_id,element_form,instrument,frequency
+﻿year,site_id,analyte_type,instrument,frequency
 2006,60427,WS,ICPMS,3
 2006,60427,total,IC,3
 2007,60427,WS,ICPMS,3

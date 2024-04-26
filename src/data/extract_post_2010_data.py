@@ -16,7 +16,7 @@ from src.utils.logger_config import setup_logger
 logger = setup_logger('data.extract_post_2010_data', 'extract_data.log')
 
 # provided worksheet names
-element_forms = {'NT': 'Metals_ICPMS (Near-Total)', 'WS': 'Metals_ICPMS (Water-Soluble)'}
+analyte_types = {'NT': 'Metals_ICPMS (Near-Total)', 'WS': 'Metals_ICPMS (Water-Soluble)'}
 
 column_names_PM25 = [
     'NAPS Site ID', 'Sampling Date', 'Sample Type', 
@@ -58,21 +58,21 @@ def find_header_row(sheet):
         break  # should finish with only one loop
     return row_idx
 
-def extract_PM25_vals(sheet, element_form):
+def extract_PM25_vals(sheet, analyte_type):
     """
     Extract PM2.5 data from a sampler which is addressed based on the metal type.
     (Near Total metals are measured with Sampler #1 and 
     Water-soluble metals are measured with Sampler #2.)
     - input: 
         - sheet: worksheet of an xlsx file
-        - element_form: 'NT' for Near total or 'WS' for Water-sluble data (string)
+        - analyte_type: 'NT' for Near total or 'WS' for Water-sluble data (string)
     - output: df: a DataFrame containing PM2.5 data
     """
     
     header_row = find_header_row(sheet)
 
-    sampler = ('S-1' if element_form == 'NT' else 'S-2')
-    sampler_to_mask = ('S-2' if element_form == 'NT' else 'S-1')
+    sampler = ('S-1' if analyte_type == 'NT' else 'S-2')
+    sampler_to_mask = ('S-2' if analyte_type == 'NT' else 'S-1')
     
     cols = []
     for col in sheet.iter_cols():
@@ -99,7 +99,7 @@ def extract_PM25_vals(sheet, element_form):
     df.reset_index(inplace=True, drop=True)
     return df
 
-def extract_metal_vals(sheet, element_form):
+def extract_metal_vals(sheet, analyte_type):
     rows = []
     for row in sheet.iter_rows(min_row=1, max_row=sheet.max_row, min_col=1, max_col=sheet.max_column):
         row_vals = []
@@ -122,7 +122,7 @@ def extract_metal_vals(sheet, element_form):
         'Sampling Type': 'sampling_type'}, inplace = True)
     
     df['sampler'] = sampler
-    df['element_form'] = element_form   
+    df['analyte_type'] = analyte_type   
     return df
 
 def extract_ion_2010(sheet):
@@ -153,7 +153,7 @@ def extract_ion_2010(sheet):
         'NAPS Site ID': 'site_id',  
         'Sampling Date': 'sampling_date', 
         'Sampling Type': 'sampling_type'}, inplace = True)
-    df['element_form'] = 'total'
+    df['analyte_type'] = 'total'
     df['sampler'] = sampler
     return df
 
@@ -175,9 +175,10 @@ def extract_file(file_path, meta_df):
     # if both NT and WS data exist, this loop is run twice; otherwise one time
     for index, row in meta_df.iterrows():
         
-        pm25_df = extract_PM25_vals(book['PM2.5'], row['element_form'])
+        pm25_df = extract_PM25_vals(book['PM2.5'], row['analyte_type'])
         pm25_df = rename_columns(pm25_df)
-        metal_df = extract_metal_vals(book[element_forms[row['element_form']]], row['element_form'])
+        metal_df = extract_metal_vals(book[analyte_types[
+                                      row['analyte_type']]], row['analyte_type'])
         metal_df = rename_columns(metal_df)
         
         merged_df = pm25_df.merge(metal_df, on=['site_id', 'sampling_date', 'sampling_type', 'sampler'])
@@ -206,11 +207,11 @@ def extract_post_2010():
             narrowed_index_df = index_df[(
                 index_df['year'] == year) & (
                     index_df['site_id'] == site_id) & (
-                    (index_df['element_form'] == 'NT') | (index_df['element_form'] == 'WS'))]
-            element_form_index_data = narrowed_index_df[['year', 'site_id', 'element_form']].drop_duplicates()        
+                    (index_df['analyte_type'] == 'NT') | (index_df['analyte_type'] == 'WS'))]
+            analyte_type_index_data = narrowed_index_df[['year', 'site_id', 'analyte_type']].drop_duplicates()        
             
             file_path = get_file_path_post_2010(year, site_id)
-            metal_df, ion_df = extract_file(file_path, element_form_index_data)
+            metal_df, ion_df = extract_file(file_path, analyte_type_index_data)
             
             logger.debug(f'\t{ file_path[file_path.rindex("/") + 1:] }')
     

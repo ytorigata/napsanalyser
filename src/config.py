@@ -14,7 +14,7 @@ OUTPUT_IMG_DIR = PROJECT_ROOT / 'output_image'
 DATA_URLS_FILE = CONFIG_DIR / 'data_urls.csv'
 INFO_URLS_FILE = CONFIG_DIR / 'info_urls.csv'
 STATIONS_RAW_CSV = RAW_DIR / 'stations.csv'
-ABBREVIATION_CSV = CONFIG_DIR / 'element_abbreviation.csv'
+ABBREVIATION_CSV = CONFIG_DIR / 'analyte_abbreviation.csv'
 
 # for modify errors in the dataset
 CHECKED_FREQUENCY = CONFIG_DIR / 'checked_frequency.csv'

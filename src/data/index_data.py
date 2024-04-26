@@ -44,7 +44,7 @@ def extract_stations(stations_raw_csv, stations_csv, metadata_dir):
     display(stations.tail(3))
 
 # worksheet names for the datafile >= 2010
-element_forms = {
+analyte_types = {
     'NT': 'Metals_ICPMS (Near-Total)', 
     'WS': 'Metals_ICPMS (Water-Soluble)',
     'total': 'Ions-Spec_IC'}
@@ -153,15 +153,15 @@ def header_row_in_and_after_2010(ws):
     
     return row_index_of_header
 
-def elements_before_2010(item, year, instrument):
+def analytes_before_2010(item, year, instrument):
     """
-    Return an array of elements which contain at least one measurement 
+    Return an array of analytes which contain at least one measurement 
     in the data file before 2010.
     - inputs:
         - item: datafile (pathlib.PosixPath)
         - year: year of the data (int)
         - instrument: an instrument used to measurement (string). 'ICPMS' or 'IC'
-    - output: elements: a numpy array containing elements' full names (string)
+    - output: analytes: a numpy array containing analytes' full names (string)
     """
     
     # open a book, specifying encoding to avoid an error
@@ -199,23 +199,23 @@ def elements_before_2010(item, year, instrument):
     lowercase_filtered_arr = np.sort(lowercase_filtered_arr)
     
     # keep strings in the pre-defined metals or ions
-    elements = ''
+    analytes = ''
     if instrument == 'ICPMS':
-        elements = lowercase_filtered_arr[np.isin(lowercase_filtered_arr, measured_metals)]
+        analytes = lowercase_filtered_arr[np.isin(lowercase_filtered_arr, measured_metals)]
     elif instrument == 'IC':
-        elements = lowercase_filtered_arr[np.isin(lowercase_filtered_arr, measured_ions)]
+        analytes = lowercase_filtered_arr[np.isin(lowercase_filtered_arr, measured_ions)]
     
-    return elements
+    return analytes
 
-def elements_in_and_after_2010(ws, year, element_form):
+def analytes_in_and_after_2010(ws, year, analyte_type):
     """
-    Return an array of elements which contain at least one measurement 
+    Return an array of analytes which contain at least one measurement 
     in the data file in and after 2010.
     - inputs:
         - ws: worksheet (openpyxl.worksheet.worksheet.Worksheet)
         - year: year of the data (int)
-        - element_form: 'NT' (Near total), 'WS' (water-soluble), or 'total' (string)
-    - output: elements: a numpy array containing elements' full names (string)
+        - analyte_type: 'NT' (Near total), 'WS' (water-soluble), or 'total' (string)
+    - output: analytes: a numpy array containing analytes' full names (string)
     """
 
     header_row_index = header_row_in_and_after_2010(ws)
@@ -234,7 +234,7 @@ def elements_in_and_after_2010(ws, year, element_form):
         for row in ws.iter_rows(
             min_row=header_row_index + 1, min_col=col_index, max_col=col_index, values_only=True):
             
-            # check if the cell is not empty; row[0] is the first element in a turple
+            # check if the cell is not empty; row[0] is the first analyte in a turple
             if (row[0] is not None) & (row[0] != ''):
                 has_content = True
                 break
@@ -250,22 +250,22 @@ def elements_in_and_after_2010(ws, year, element_form):
     filtered_arr = filtered_arr[~np.char.find(filtered_arr, 'Flag') >= 0]
 
     # trim abbreviation and parenthesis; e.g. Alminium (Al) -> Alminium
-    # vectorize remove_parentheses and apply it to each element in the numpy array
+    # vectorize remove_parentheses and apply it to each analyte in the numpy array
     vectorized_remove = np.vectorize(remove_parentheses)
-    trimmed_elements = vectorized_remove(filtered_arr)
+    trimmed_analytes = vectorized_remove(filtered_arr)
     
     # convert the remaining strings to lowercase
-    lowercase_filtered_arr = np.char.lower(trimmed_elements)
+    lowercase_filtered_arr = np.char.lower(trimmed_analytes)
 
     lowercase_filtered_arr = np.sort(lowercase_filtered_arr)
     
     # keep strings in the pre-defined metals or ions
-    if (element_form == 'NT') | (element_form == 'WS'):
-        elements = lowercase_filtered_arr[np.isin(lowercase_filtered_arr, measured_metals)]
-    elif element_form == 'total':
-        elements = lowercase_filtered_arr[np.isin(lowercase_filtered_arr, measured_ions)]
+    if (analyte_type == 'NT') | (analyte_type == 'WS'):
+        analytes = lowercase_filtered_arr[np.isin(lowercase_filtered_arr, measured_metals)]
+    elif analyte_type == 'total':
+        analytes = lowercase_filtered_arr[np.isin(lowercase_filtered_arr, measured_ions)]
     
-    return elements
+    return analytes
 
 def freq_before_2010(item, year, instrument):
     """
@@ -379,31 +379,31 @@ def create_row_before_2010(item, year):
     """
     file_name = item.name
 
-    # determine element_form and instrument from the suffix of the file
-    element_form = ''
+    # determine analyte_type and instrument from the suffix of the file
+    analyte_type = ''
     instrument = ''
     if file_name.endswith('_ICPMS.XLS'):
-        element_form = 'NT'
+        analyte_type = 'NT'
         instrument = 'ICPMS'
     elif file_name.endswith('_WICPMS.XLS'):
-        element_form = 'WS'
+        analyte_type = 'WS'
         instrument = 'ICPMS'
     elif file_name.endswith('_IC.XLS'):
-        element_form = 'total'
+        analyte_type = 'total'
         instrument = 'IC'
     else:
         logger.error(f'{file_name} is not expected neither for ICPMS nor IC measured data.')
     
-    elements = elements_before_2010(item, year, instrument)
+    analytes = analytes_before_2010(item, year, instrument)
     frequency = freq_before_2010(item, year, instrument)
     
     rows = []
-    for element in elements:
+    for analyte in analytes:
         rows.append({
             'year': year,
             'site_id': int(site_id(file_name)),
-            'element': element,
-            'element_form': element_form,
+            'analyte': analyte,
+            'analyte_type': analyte_type,
             'instrument': instrument,
             'frequency': frequency
         })
@@ -425,25 +425,25 @@ def create_row_in_and_after_2010(item, year):
     
     # check if the worksheet for NT and/or WS data exists
     rows = []
-    for element_form, sheet_name in element_forms.items():   
+    for analyte_type, sheet_name in analyte_types.items():   
         if sheet_name in book.sheetnames:
 
-            elements = elements_in_and_after_2010(book[sheet_name], year, element_form)
+            analytes = analytes_in_and_after_2010(book[sheet_name], year, analyte_type)
             
             instrument = ''
-            if (element_form == 'NT') | (element_form == 'WS'):
+            if (analyte_type == 'NT') | (analyte_type == 'WS'):
                 instrument = 'ICPMS'
-            elif element_form == 'total':
+            elif analyte_type == 'total':
                 instrument = 'IC'
             
             frequency = freq_in_and_after_2010(book[sheet_name], year)
             
-            for element in elements:
+            for analyte in analytes:
                 rows.append({
                     'year': year,
                     'site_id': int(site_id(file_name)),
-                    'element': element,
-                    'element_form': element_form,
+                    'analyte': analyte,
+                    'analyte_type': analyte_type,
                     'instrument': instrument,
                     'frequency': frequency
                 })
@@ -479,7 +479,7 @@ def index_dataset_attributes(DATA_URLS_FILE, INDEX_CSV, RAW_DIR):
     
     # save the metadata to a CSV file
     metadata_df = pd.DataFrame.from_records(rows_list)
-    metadata_df.sort_values(['year', 'site_id', 'element'], inplace=True)
+    metadata_df.sort_values(['year', 'site_id', 'analyte'], inplace=True)
     metadata_df = metadata_df.reset_index(drop=True)
     metadata_df.to_csv(INDEX_CSV, index=False)
 
@@ -497,7 +497,7 @@ def apply_manually_checked_frequency(index_df, CHECKED_FREQUENCY, INDEX_CSV):
     checked_freq = pd.read_csv(CHECKED_FREQUENCY)
     df_merged = pd.merge(
         index_df, checked_freq, 
-        on=['year', 'site_id', 'element_form', 'instrument'], how='left', suffixes=('', '_new'))
+        on=['year', 'site_id', 'analyte_type', 'instrument'], how='left', suffixes=('', '_new'))
     
     # Update 'frequency' in index_df by using checked_freq where available
     df_merged['frequency'] = np.where(
@@ -523,26 +523,26 @@ def drop_entries_with_too_few_measurements(index_df, INDEX_CSV):
     will_be_dropped = index_df[(
         (index_df['year'] == 2007) & 
         (index_df['site_id'] == 70301) & 
-        (index_df['element_form'] == 'WS')) | (
+        (index_df['analyte_type'] == 'WS')) | (
             (index_df['year'] == 2016) & 
             (index_df['site_id'] == 129302) & 
-            (index_df['element_form'] == 'total')) | (
+            (index_df['analyte_type'] == 'total')) | (
             (index_df['year'] == 2017) & 
             (index_df['site_id'] == 60610) & 
-            (index_df['element_form'] == 'total'))]
+            (index_df['analyte_type'] == 'total'))]
     
     logger.info(f'{len(will_be_dropped)} rows will be dropped from the index CSV with {len(index_df)} entries')
     
     index_df = index_df.drop(index_df[(
         (index_df['year'] == 2007) & 
         (index_df['site_id'] == 70301) & 
-        (index_df['element_form'] == 'WS')) | (
+        (index_df['analyte_type'] == 'WS')) | (
             (index_df['year'] == 2016) & 
             (index_df['site_id'] == 129302) & 
-            (index_df['element_form'] == 'total')) | (
+            (index_df['analyte_type'] == 'total')) | (
             (index_df['year'] == 2017) & 
             (index_df['site_id'] == 60610) & 
-            (index_df['element_form'] == 'total'))].index)
+            (index_df['analyte_type'] == 'total'))].index)
     
     index_df.to_csv(INDEX_CSV, index=False)
     return index_df
@@ -558,13 +558,13 @@ def update_index_with_major_frequency(index_df, INDEX_CSV):
     """
     index_df.loc[(index_df['year'] == 2006) & 
                 (index_df['site_id'] == 100119) & 
-                (index_df['element_form'] == 'WS'), ['frequency']] = 3
+                (index_df['analyte_type'] == 'WS'), ['frequency']] = 3
     index_df.loc[(index_df['year'] == 2014) & 
                 (index_df['site_id'] == 129003) & 
-                (index_df['element_form'] == 'NT'), ['frequency']] = 3
+                (index_df['analyte_type'] == 'NT'), ['frequency']] = 3
     index_df.loc[(index_df['year'] == 2015) & 
                 (index_df['site_id'] == 129003) & 
-                (index_df['element_form'] == 'NT'), ['frequency']] = 3
+                (index_df['analyte_type'] == 'NT'), ['frequency']] = 3
     
     index_df.to_csv(INDEX_CSV, index=False)
     return index_df

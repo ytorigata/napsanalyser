@@ -31,24 +31,24 @@ def omit_blanks(df, year):
     return regular_measurements_df
 
 
-def omit_error_measurements(df, element):
+def omit_error_measurements(df, analyte):
     """
     Return a DataFrame which excludes error measurements. Empty values and any values 
     less than or equal to 0 is assumed as error.
     - inputs: 
         - df: a DataFrame
-        - element: a full name of element
+        - analyte: a full name of analyte
     - output: non_error_df: a DataFrame without error measurements
     """
-    non_error_df = df[(df[element] is not None) & (df[element] > 0)]
+    non_error_df = df[(df[analyte] is not None) & (df[analyte] > 0)]
     return non_error_df
 
-def create_nt_element_files(target_site_id):
+def create_nt_analyte_files(target_site_id):
     """
     Create a set of files containing Near Total metal concentrations with MDL 
     for a specified site.
     - input: target_site_id: NAPS site ID (int)
-    - output: (saving a CSV file for each element)
+    - output: (saving a CSV file for each analyte)
     """
     pmf_dir = str(PROCESSED_DIR) + '/' + str(target_site_id) + '_for_PMF'
     ensure_directory_exists(Path(pmf_dir))
@@ -57,33 +57,33 @@ def create_nt_element_files(target_site_id):
 
     index_df = pd.read_csv(INDEX_CSV)
     site_df = index_df[index_df['site_id'] == target_site_id]
-    nt_element_array = site_df[site_df['element_form'] == 'NT']['element'].unique()
+    nt_analyte_array = site_df[site_df['analyte_type'] == 'NT']['analyte'].unique()
     
-    for nt_element in nt_element_array:
-        logger.debug(f'NT element: {nt_element}')
-        element_df = pd.DataFrame() 
+    for nt_analyte in nt_analyte_array:
+        logger.debug(f'NT analyte: {nt_analyte}')
+        analyte_df = pd.DataFrame() 
         
-        years = get_years_for_site(target_site_id, nt_element, 'NT')
-        mdl_col_name = abb_dict[nt_element] + '-MDL'
+        years = get_years_for_site(target_site_id, nt_analyte, 'NT')
+        mdl_col_name = abb_dict[nt_analyte] + '-MDL'
         
         for year in years:
             # load NT data for a specified year and site
             file_path = str(PROCESSED_DIR) + '/' + str(year) + '_' + str(target_site_id) + '.csv'
             file_df = pd.read_csv(file_path)
-            nt_df = file_df[file_df['element_form'] == 'NT']
+            nt_df = file_df[file_df['analyte_type'] == 'NT']
             
-            # if a column with the element name exists
-            if nt_element in nt_df.columns:
+            # if a column with the analyte name exists
+            if nt_analyte in nt_df.columns:
                 regular_df = omit_blanks(nt_df, year)
-                non_error_df = omit_error_measurements(regular_df, nt_element)
-                extracted_df = non_error_df[['sampling_date', nt_element, mdl_col_name]]
+                non_error_df = omit_error_measurements(regular_df, nt_analyte)
+                extracted_df = non_error_df[['sampling_date', nt_analyte, mdl_col_name]]
     
                 # if the number of extracted rows > 0, the year's data will be concatnated
                 if len(extracted_df) > 0:
-                    element_df = pd.concat([element_df, extracted_df], ignore_index=True).reset_index(drop=True)
+                    analyte_df = pd.concat([analyte_df, extracted_df], ignore_index=True).reset_index(drop=True)
         
-        if len(element_df) > 0:
-            element_df.to_csv(pmf_dir + '/NT_' + nt_element + '.csv', index=False)
+        if len(analyte_df) > 0:
+            analyte_df.to_csv(pmf_dir + '/NT_' + nt_analyte + '.csv', index=False)
 
 def create_PM25_file(target_site_id):
     """
@@ -97,7 +97,7 @@ def create_PM25_file(target_site_id):
     
     index_df = pd.read_csv(INDEX_CSV)
     site_df = index_df[index_df['site_id'] == target_site_id]
-    nt_years = site_df[site_df['element_form'] == 'NT']['year'].unique()
+    nt_years = site_df[site_df['analyte_type'] == 'NT']['year'].unique()
     
     pm25_df = pd.DataFrame()
     
@@ -105,7 +105,7 @@ def create_PM25_file(target_site_id):
         logger.debug(f'PM2.5 in {year}')
         file_path = str(PROCESSED_DIR) + '/' + str(year) + '_' + str(target_site_id) + '.csv'
         file_df = pd.read_csv(file_path)
-        nt_df = file_df[file_df['element_form'] == 'NT']
+        nt_df = file_df[file_df['analyte_type'] == 'NT']
         
         non_error_df = omit_error_measurements(nt_df, 'PM2.5')
         
@@ -153,7 +153,7 @@ def create_ion_files(target_site_id):
     
     index_df = pd.read_csv(INDEX_CSV)
     site_df = index_df[index_df['site_id'] == target_site_id]
-    ion_array = site_df[site_df['element_form'] == 'total']['element'].unique()
+    ion_array = site_df[site_df['analyte_type'] == 'total']['analyte'].unique()
     
     for ion in ion_array:
         logger.debug(f'Ion: {ion}')
@@ -166,7 +166,7 @@ def create_ion_files(target_site_id):
             # load ion data for a specified year and site
             file_path = str(PROCESSED_DIR) + '/' + str(year) + '_' + str(target_site_id) + '_IC.csv'
             file_df = pd.read_csv(file_path)            
-            ic_df = file_df[file_df['element_form'] == 'total']
+            ic_df = file_df[file_df['analyte_type'] == 'total']
             
             # if a column with the ion name exists
             if ion in ic_df.columns:

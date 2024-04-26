@@ -3,7 +3,7 @@ from src.config import INDEX_CSV, STATIONS_CSV
 
 def color_nt_ws(value):
     """
-    Colors elements in a dateframe: 
+    Colors analytes in a dateframe: 
     green if both Near-Total and Water-Soluble data exist,
     orange if only Near-Total data exist,
     blue if only Water-Soluble data exist, and
@@ -44,24 +44,24 @@ def color_percentage(value):
     return 'background-color: %s' % color
 
 
-def visualize_coverage_by_site_and_year(element=''):
+def visualize_coverage_by_site_and_year(analyte=''):
     """
     Display a table of coverage of the data set.
-    - input: element (optional): element or ion full name (string)
+    - input: analyte (optional): analyte or ion full name (string)
     - output: (display to screen)
     """
     index_df = pd.read_csv(INDEX_CSV)
     stations = pd.read_csv(STATIONS_CSV)
     years = index_df.sort_values('year')['year'].squeeze().unique()
     
-    # select a particular element if specified
+    # select a particular analyte if specified
     icpms_df = pd.DataFrame()
-    if element != '':
-        icpms_df = index_df[(index_df['instrument'] == 'ICPMS') & (index_df['element'] == element)]
+    if analyte != '':
+        icpms_df = index_df[(index_df['instrument'] == 'ICPMS') & (index_df['analyte'] == analyte)]
     else:
         icpms_df = index_df[index_df['instrument'] == 'ICPMS']
     
-    unique_combinations = icpms_df[['year', 'site_id', 'element_form']].drop_duplicates()
+    unique_combinations = icpms_df[['year', 'site_id', 'analyte_type']].drop_duplicates()
     unique_combinations.reset_index(drop=True, inplace=True)
 
     all_sites = []
