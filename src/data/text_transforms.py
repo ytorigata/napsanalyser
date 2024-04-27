@@ -16,6 +16,7 @@ def convert_micro_to_nano(df, columns):
         converted_df.loc[:, [col]] = tmp_df
     return converted_df
 
+
 def get_abbreviation_dict():
     """
     Return a diction with full names of analytes as keys and their abbreviations as values.
@@ -28,8 +29,17 @@ def get_abbreviation_dict():
     abb_dict = pd.Series(abb_df[column_values].values, index=abb_df[column_keys]).to_dict()
     return abb_dict
 
+
+def get_MDL_col_name(analyte):
+    """Return a MDL column name for a specified analyte"""
+    abb_dict = get_abbreviation_dict()
+    abb = abb_dict[analyte]
+    return abb + '-MDL'
+
+
 def remove_parentheses(text):
     return re.sub(r'\s*\([^)]*\)', '', text)
+
 
 def rename_columns(df, TEMPLATE=COLUMN_NAMES):
     """
