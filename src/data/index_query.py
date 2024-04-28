@@ -28,6 +28,27 @@ def get_all_metals():
     return metal_list
 
 
+def get_all_sites(analyte=None, analyte_type=None, instrument=None):
+    """
+    Return a list of all site IDs.
+    - output: site_list: a list of NAPS site IDs (int)
+    """
+    index_df = pd.read_csv(INDEX_CSV)
+
+    mask = pd.Series([True] * len(index_df))
+    if analyte is not None:
+        mask = mask & (index_df['analyte'] == analyte)
+    if analyte_type is not None:
+        mask = mask & (index_df['analyte_type'] == analyte_type)
+    if instrument is not None:
+        mask = mask & (index_df['instrument'] == instrument)
+    
+    filtered_df = index_df[mask]
+    site_list = filtered_df['site_id'].unique().tolist()
+    site_list.sort()
+    return site_list
+
+    
 def get_sites_for_year(year, analyte='', analyte_type=''):
     """
     Return a list of unique NAPS site IDs associated with a specified year.
@@ -60,21 +81,29 @@ def get_sites_for_year(year, analyte='', analyte_type=''):
     return site_ids
 
 
-def get_years_for_site(site_id, analyte, analyte_type):
+def get_years_for_site(site_id, analyte, analyte_type=None):
     """
     Return years associated with a specified NAPS site ID.
     - inputs:
         site_id: NAPS site ID (int)
         analyte: a full name (string) of analyte
+        analyte_type: Optional. 'NT' for Near Total, 'WS' for Water-soluble, and 'total' for ions.
     - output: years: a list of years (int)
     """
     index_df = pd.read_csv(INDEX_CSV)
+
+    filtered_df = pd.DataFrame()
+    if analyte_type is not None:
     
-    filtered_df = index_df[(
-        index_df['site_id'] == site_id) & (
-            index_df['analyte'] == analyte) & (
-            index_df['analyte_type'] == analyte_type)
-    ]
+        filtered_df = index_df[(
+            index_df['site_id'] == site_id) & (
+                index_df['analyte'] == analyte) & (
+                index_df['analyte_type'] == analyte_type)]
+    else:
+        filtered_df = index_df[(
+            index_df['site_id'] == site_id) & (
+                index_df['analyte'] == analyte)]
+        
     unique_years = filtered_df['year'].unique()
     unique_years_list = unique_years.tolist()
 
