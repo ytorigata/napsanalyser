@@ -2,27 +2,45 @@ import pandas as pd
 from src.config import INDEX_CSV, STATIONS_CSV
 
 
-def get_all_ions():
+def get_all_ions(site_ids=None, years=None):
     """
-    Return a list of all ion names in the index file.
+    Return a list of all ion names in the index file. 
+    - inputs:
+        - site_ids: a list of site_id (int); optional
+        - years: a list of year (int); optional
     - output: ion_list: a list of ions' full names (string)
     """
     index_df = pd.read_csv(INDEX_CSV)
+
+    mask = (index_df['instrument'] == 'IC')
+    if site_ids is not None:
+        mask = mask & (index_df['site_id'].isin(site_ids))
+    if years is not None:
+        mask = mask & (index_df['year'].isin(years))
     
-    ion_df = index_df[(index_df['instrument'] == 'IC')]
+    ion_df = index_df[mask].copy()
     ion_list = ion_df['analyte'].unique().tolist()
     ion_list.sort()
     return ion_list
 
 
-def get_all_metals():
+def get_all_metals(site_ids=None, years=None):
     """
     Return a list of all trace metal names in the index file.
+    - inputs:
+        - site_ids: a list of site_id (int); optional
+        - years: a list of year (int); optional
     - output: metal_list: a list of metals' full names (string)
     """
     index_df = pd.read_csv(INDEX_CSV)
+
+    mask = (index_df['instrument'] == 'ICPMS')
+    if site_ids is not None:
+        mask = mask & (index_df['site_id'].isin(site_ids))
+    if years is not None:
+        mask = mask & (index_df['year'].isin(years))
     
-    metal_df = index_df[(index_df['instrument'] == 'ICPMS')]
+    metal_df = index_df[mask].copy()
     metal_list = metal_df['analyte'].unique().tolist()
     metal_list.sort()
     return metal_list
