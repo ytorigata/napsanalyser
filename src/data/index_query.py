@@ -1,5 +1,5 @@
 import pandas as pd
-from src.config import INDEX_CSV
+from src.config import INDEX_CSV, STATIONS_CSV
 
 
 def get_all_ions():
@@ -79,6 +79,22 @@ def get_sites_for_year(year, analyte='', analyte_type=''):
         
     site_ids = sites_for_year_df['site_id'].sort_values().unique()
     return site_ids
+
+
+def get_sations_info(sites):
+    """
+    Return stations' information for specified sites
+    - input: sites: a list of site ID (int)
+    - output: site_info: a DataFrame of staton information
+    """
+    stations = pd.read_csv(STATIONS_CSV)
+    # Merge the sites in our interest with the coordinates information
+    site_list_df = pd.read_csv(INDEX_CSV, index_col=0).drop_duplicates(subset = 'site_id')
+    
+    site_info = site_list_df.merge(stations, on='site_id')[
+        ['site_id', 'station_name', 'Latitude', 'Longitude', 'site_type']].sort_values('site_id').reset_index(drop=True)
+    
+    return site_info
 
 
 def get_years_for_site(site_id, analyte, analyte_type=None):
