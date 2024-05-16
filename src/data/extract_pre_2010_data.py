@@ -13,33 +13,28 @@ from src.utils.logger_config import setup_logger
 
 logger = setup_logger('data.extract_pre_2010_data', 'extract_data.log')
 
-def get_ICPMS_file_path(year, site_id, analyte_type):
+def get_raw_file_path(year, site_id, instrument, analyte_type=None):
     """
-    Return a file path to the ICP-MS measured data (2003-2009).
+    Return a file path to a raw data in 2003 to 2009
     - inputs:
         - year: year of the data (int)
         - site_id: NAPS site ID (int)
-        - analyte_type: 'NT' (Near Total) or 'WS' (Water-soluble) (string)
+        - instrument: 'ICPMS' or 'IC' (string)
+        - analyte_type: 'NT' (near-total) or 'WS' (water-soluble) (string); optional, but
+            reuquired when instrument is ICPMS
     - output: file_path (string)
     """
     file_name = 'S' + str(site_id)
-    if analyte_type == 'NT':
-        file_name += '_ICPMS.XLS'
+    
+    if instrument == 'ICPMS':
+        if analyte_type == 'NT':
+            file_name += '_ICPMS.XLS'
+        else
+            file_name += '_WICPMS.XLS'
     else:
-        file_name += '_WICPMS.XLS'
+        file_name += '_IC.XLS'
+    
     file_path = str(RAW_DIR) + '/' + str(year) + '/SPECIATION/' + file_name
-    return file_path
-
-
-def get_IC_file_path(year, site_id):
-    """
-    Return a file path to the measured ion data (2003-2009).
-    - inputs:
-        - year: year of the data (into)
-        - site_id: NAPS site ID (int)
-    - output: file_path (string)
-    """
-    file_path = str(RAW_DIR) + '/' + str(year) + '/SPECIATION/S' + str(site_id) + '_IC.XLS'
     return file_path
 
 
@@ -146,8 +141,7 @@ def extract_ICPMS_measurements(meta_df, year, site_id):
     
     for idx, row in meta_df.iterrows():
         
-        file_path_metal = get_ICPMS_file_path(year, site_id, row['analyte_type'])
-        
+        file_path_metal = get_raw_file_path(year, site_id, 'ICPMS', row['analyte_type'])
         metal_vals = extract_sheet_values(file_path_metal, year)
         sheet_df = sheet_array_to_df(metal_vals, site_id).reset_index(drop=True)
         metal_df = sheet_df_to_metal_df(sheet_df, row['analyte_type']).reset_index(drop=True)
@@ -172,7 +166,7 @@ def extract_IC_measurements(meta_df, year, site_id):
     """
     if (len(meta_df) > 0):
         
-        file_path_ion = get_IC_file_path(year, site_id)
+        file_path_ion = get_raw_file_path(year, site_id, 'IC')
         
         ion_vals = extract_sheet_values(file_path_ion, year)
         sheet_df = sheet_array_to_df(ion_vals, site_id)
