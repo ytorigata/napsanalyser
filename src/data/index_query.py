@@ -49,9 +49,14 @@ def get_all_metals(site_ids=None, years=None):
     return get_all_analytes(site_ids, years, 'ICPMS')
 
 
-def get_all_sites(analyte=None, analyte_type=None, instrument=None):
+def get_all_sites(analyte=None, analyte_type=None, instrument=None, year=None):
     """
     Return a list of all site IDs.
+    - inputs:
+        - analyte: Optional. A full name of analyte or ion (string)
+        - analyte_type: Optional. 'NT' for Near Total, 'WS' for Water-soluble, and 'total' for ions
+        - instrument: Optional. 'ICPMS' or 'IC' (string)
+        - year: Optional. year of the interest (int)
     - output: site_list: a list of NAPS site IDs (int)
     """
     index_df = pd.read_csv(INDEX_CSV)
@@ -63,8 +68,10 @@ def get_all_sites(analyte=None, analyte_type=None, instrument=None):
         mask = mask & (index_df['analyte_type'] == analyte_type)
     if instrument is not None:
         mask = mask & (index_df['instrument'] == instrument)
+    if year is not None:
+        mask = mask & (index_df['year'] == year)
     
-    filtered_df = index_df[mask]
+    filtered_df = index_df[mask].copy()
     site_list = filtered_df['site_id'].unique().tolist()
     site_list.sort()
     return site_list
@@ -79,27 +86,11 @@ def get_sites_for_year(year, analyte='', analyte_type=''):
         - analyte_type: Optional. 'NT' for Near Total, 'WS' for Water-soluble, and 'total' for ions.
     - output: site_ids: a list of NAPS site IDs (int)
     """
-    index_df = pd.read_csv(INDEX_CSV)
-
-    sites_for_year_df = pd.DataFrame()
-    if (analyte != '') & (analyte_type != ''):
-        sites_for_year_df = index_df[(
-            index_df['year'] == year) & (
-                index_df['analyte'] == analyte) & (
-                index_df['analyte_type'] == analyte_type)]
-    elif analyte != '':
-        sites_for_year_df = index_df[(
-            index_df['year'] == year) & (
-                index_df['analyte'] == analyte)]
-    elif analyte_type != '':
-        sites_for_year_df = index_df[(
-            index_df['year'] == year) & (
-                index_df['analyte_type'] == analyte_type)]
-    else:
-        sites_for_year_df = index_df[index_df['year'] == year]
-        
-    site_ids = sites_for_year_df['site_id'].sort_values().unique()
-    return site_ids
+    if analyte == '':
+        analyte = None
+    if analyte_type == '':
+        analyte_type = None
+    return get_all_sites(analyte, analyte_type, instrument=None, year=year)
 
 
 def get_sations_info(sites):
