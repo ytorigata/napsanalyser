@@ -77,7 +77,7 @@ def get_all_sites(analyte=None, analyte_type=None, instrument=None, year=None):
     return site_list
 
     
-def get_sites_for_year(year, analyte='', analyte_type=''):
+def get_sites_for_year(year, analyte='', analyte_type='', instrument=None):
     """
     Return a list of unique NAPS site IDs associated with a specified year.
     - inputs:
@@ -90,7 +90,7 @@ def get_sites_for_year(year, analyte='', analyte_type=''):
         analyte = None
     if analyte_type == '':
         analyte_type = None
-    return get_all_sites(analyte, analyte_type, instrument=None, year=year)
+    return get_all_sites(analyte, analyte_type, instrument, year=year)
 
 
 def get_sations_info(sites):
