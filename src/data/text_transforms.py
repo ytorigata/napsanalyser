@@ -2,6 +2,9 @@ import pandas as pd
 import re
 from src.config import ABBREVIATION_CSV, COLUMN_NAMES
 
+# Global variable to cache the data
+_cached_column_names = None
+
 def convert_micro_to_nano(df, columns):
     """
     Convert unit from micro to nano in specified columns.
@@ -41,6 +44,13 @@ def remove_parentheses(text):
     return re.sub(r'\s*\([^)]*\)', '', text)
 
 
+def load_column_names_file(filepath):
+    global _cached_column_names
+    if _cached_column_names is None:
+        _cached_column_names = pd.read_csv(filepath)
+    return _cached_column_names
+
+
 def rename_columns(df, TEMPLATE=COLUMN_NAMES):
     """
     Convert the column names to the same column names as the data after 2010
@@ -51,7 +61,7 @@ def rename_columns(df, TEMPLATE=COLUMN_NAMES):
             in 'new_name' column
     - output: renamed_df, a DataFrame with modified column names 
     """
-    col_names_df = pd.read_csv(TEMPLATE)
+    col_names_df = load_column_names_file(TEMPLATE)
     dict_col = dict(zip(col_names_df.old_name, col_names_df.new_name))
     renamed_df = df.rename(columns=dict_col, errors = 'ignore')
     return renamed_df
