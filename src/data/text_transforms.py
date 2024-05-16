@@ -4,6 +4,7 @@ from src.config import ABBREVIATION_CSV, COLUMN_NAMES
 
 # Global variable to cache the data
 _cached_column_names = None
+_cached_column_names_pre_2010 = None
 
 def convert_micro_to_nano(df, columns):
     """
@@ -45,10 +46,18 @@ def remove_parentheses(text):
 
 
 def load_column_names_file(filepath):
-    global _cached_column_names
-    if _cached_column_names is None:
-        _cached_column_names = pd.read_csv(filepath)
-    return _cached_column_names
+    
+    if filepath == COLUMN_NAMES:
+        global _cached_column_names
+        if _cached_column_names is None:
+            _cached_column_names = pd.read_csv(filepath)
+        return _cached_column_names
+        
+    else:  # COLUMN_NAMES_PRE_2010_IONS
+        global _cached_column_names_pre_2010
+        if _cached_column_names_pre_2010 is None:
+            _cached_column_names_pre_2010 = pd.read_csv(filepath)
+        return _cached_column_names_pre_2010
 
 
 def rename_columns(df, TEMPLATE=COLUMN_NAMES):
