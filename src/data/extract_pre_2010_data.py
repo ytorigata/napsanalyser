@@ -30,6 +30,7 @@ def get_ICPMS_file_path(year, site_id, analyte_type):
     file_path = str(RAW_DIR) + '/' + str(year) + '/SPECIATION/' + file_name
     return file_path
 
+
 def get_IC_file_path(year, site_id):
     """
     Return a file path to the measured ion data (2003-2009).
@@ -40,6 +41,7 @@ def get_IC_file_path(year, site_id):
     """
     file_path = str(RAW_DIR) + '/' + str(year) + '/SPECIATION/S' + str(site_id) + '_IC.XLS'
     return file_path
+
 
 def extract_sheet_values(file_path, year):
     """
@@ -91,7 +93,8 @@ def sheet_array_to_df(nested_array, site_id):
     datafile = datafile.iloc[1:, :].astype({'NAPS ID': 'int'})
     
     return datafile
-    
+
+
 def sheet_df_to_metal_df(datafile, analyte_type):
     """
     Convert a 2D array which contains a worksheet data to the DataFrame for metal data
@@ -105,6 +108,7 @@ def sheet_df_to_metal_df(datafile, analyte_type):
     datafile['analyte_type'] = analyte_type
     datafile['sampler'] = None
     return datafile
+
 
 def sheet_df_to_ion_df(datafile):
     """
@@ -129,58 +133,69 @@ def sheet_df_to_ion_df(datafile):
     datafile['sampler'] = None
     return datafile
 
+
+def extract_ICPMS_measurements(meta_df, year, site_id):
+    # extract NT and/or WS data for each site
+    datafile = pd.DataFrame()
+    
+    for idx, row in meta_df.iterrows():
+        
+        file_path_metal = get_ICPMS_file_path(year, site_id, row['analyte_type'])
+        
+        metal_vals = extract_sheet_values(file_path_metal, year)
+        sheet_df = sheet_array_to_df(metal_vals, site_id).reset_index(drop=True)
+        metal_df = sheet_df_to_metal_df(sheet_df, row['analyte_type']).reset_index(drop=True)
+        
+        logger.debug(f'\t{ file_path_metal[file_path_metal.rindex("/") + 1:] }')
+        
+        # concatenate NT and WS data from one site
+        # *** note some of the columns in the two DataFrames are different, so ignore_index=True is needed
+        datafile = pd.concat([datafile, metal_df], axis=0, ignore_index=True)
+
+    if len(datafile) > 0:
+        datafile.to_csv(str(PROCESSED_DIR) + '/' + str(year) + '_' + str(site_id) + '.csv', index = False)
+
+
+def extract_IC_measurements(meta_df, year, site_id):
+    if (len(meta_df) > 0):
+        
+        file_path_ion = get_IC_file_path(year, site_id)
+        
+        ion_vals = extract_sheet_values(file_path_ion, year)
+        sheet_df = sheet_array_to_df(ion_vals, site_id)
+        ion_df = sheet_df_to_ion_df(sheet_df)
+        
+        logger.debug(f'\t{ file_path_ion[file_path_ion.rindex("/") + 1:] }')
+        
+        ion_df.to_csv(str(PROCESSED_DIR) + '/' + str(year) + '_' + str(site_id) + '_IC.csv', index = False)
+
+
 def extract_pre_2010():
     """
     Extract data between 2003 and 2009
     """
     ensure_directory_exists(PROCESSED_DIR)
+    # unique site list for the year
+    index_df = pd.read_csv(INDEX_CSV)
+    unique_combinations = index_df[['year', 'site_id', 'analyte_type', 'instrument']].drop_duplicates()
+    unique_combinations.reset_index(drop=True, inplace=True)
     
     for year in list(range(2003, 2010)):
     
         logger.info(f'Start extracting PM2.5-Speciation data of {year}')
+
+        unique_sites_in_year = unique_combinations[unique_combinations['year'] == year]
+        site_ids = unique_sites_in_year['site_id'].unique()
         
-        # unique site list for the year
-        index_df = pd.read_csv(INDEX_CSV)
-        sites_for_year_df = index_df[index_df['year'] == year]
-        unique_combinations = sites_for_year_df[['year', 'site_id', 'analyte_type', 'instrument']].drop_duplicates()
-        unique_combinations.reset_index(drop=True, inplace=True)
-        
-        site_ids = get_sites_for_year(year)
         for site_id in site_ids:
-            site_df = unique_combinations[unique_combinations['site_id'] == site_id]
-            icpms_df = site_df[site_df['instrument'] == 'ICPMS']
+            site_df = unique_sites_in_year[unique_sites_in_year['site_id'] == site_id]
+
+            # extract trace metal data
+            icpms_df = site_df[site_df['instrument'] == 'ICPMS'].copy()
+            extract_ICPMS_measurements(icpms_df, year, site_id)
             
-            # extract NT and/or WS data for each site
-            datafile = pd.DataFrame()
-            for idx, row in icpms_df.iterrows():
-                
-                file_path_metal = get_ICPMS_file_path(year, site_id, row['analyte_type'])
-                
-                metal_vals = extract_sheet_values(file_path_metal, year)
-                sheet_df = sheet_array_to_df(metal_vals, site_id).reset_index(drop=True)
-                metal_df = sheet_df_to_metal_df(sheet_df, row['analyte_type']).reset_index(drop=True)
-                
-                logger.debug(f'\t{ file_path_metal[file_path_metal.rindex("/") + 1:] }')
-                
-                # concatenate NT and WS data from one site
-                # *** note some of the columns in the two DataFrames are different, so ignore_index=True
-                datafile = pd.concat([datafile, metal_df], axis=0, ignore_index=True)
-    
-            if len(datafile) > 0:
-                datafile.to_csv(str(PROCESSED_DIR) + '/' + str(year) + '_' + str(site_id) + '.csv', index = False)
-            
-            # extract ions data for the same site even if ICPMS data does not exist
-            ion_df = site_df[site_df['instrument'] == 'IC']
-            if (len(ion_df) > 0):
-                
-                file_path_ion = get_IC_file_path(year, site_id)
-                
-                ion_vals = extract_sheet_values(file_path_ion, year)
-                sheet_df = sheet_array_to_df(ion_vals, site_id)
-                ion_df = sheet_df_to_ion_df(sheet_df)
-                
-                logger.debug(f'\t{ file_path_ion[file_path_ion.rindex("/") + 1:] }')
-                
-                ion_df.to_csv(str(PROCESSED_DIR) + '/' + str(year) + '_' + str(site_id) + '_IC.csv', index = False)
+            # extract ions data
+            ion_df = site_df[site_df['instrument'] == 'IC'].copy()
+            extract_IC_measurements(ion_df, year, site_id)
     
         logger.info(f'Completed extracting data of {year}')
