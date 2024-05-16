@@ -135,7 +135,13 @@ def sheet_df_to_ion_df(datafile):
 
 
 def extract_ICPMS_measurements(meta_df, year, site_id):
-    # extract NT and/or WS data for each site
+    """
+    Extract near-total and/or water-soluble data
+    - inputs:
+        meta_df: a DataFrame containing unique set of metadata for year, site_id, and instrument=ICPMS
+        year: a year of data (int)
+        site_id: NAPS site ID (int)
+    """
     datafile = pd.DataFrame()
     
     for idx, row in meta_df.iterrows():
@@ -157,6 +163,13 @@ def extract_ICPMS_measurements(meta_df, year, site_id):
 
 
 def extract_IC_measurements(meta_df, year, site_id):
+    """
+    Extract ion data and save it as a file
+    - inputs:
+        meta_df: a DataFrame containing unique set of metadata for year, site_id, and instrument=IC
+        year: a year of data (int)
+        site_id: NAPS site ID (int)
+    """
     if (len(meta_df) > 0):
         
         file_path_ion = get_IC_file_path(year, site_id)
