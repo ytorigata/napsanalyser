@@ -29,7 +29,7 @@ def get_raw_file_path(year, site_id, instrument, analyte_type=None):
     if instrument == 'ICPMS':
         if analyte_type == 'NT':
             file_name += '_ICPMS.XLS'
-        else
+        else:
             file_name += '_WICPMS.XLS'
     else:
         file_name += '_IC.XLS'
