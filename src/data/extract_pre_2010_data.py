@@ -7,7 +7,6 @@ import xlrd
 
 from src.config import RAW_DIR, PROCESSED_DIR, INDEX_CSV, COLUMN_NAMES_PRE_2010_IONS
 from src.data.file_operation import ensure_directory_exists
-from src.data.index_query import get_sites_for_year
 from src.data.text_transforms import rename_columns
 from src.utils.logger_config import setup_logger
 

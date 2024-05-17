@@ -6,7 +6,7 @@ import pandas as pd
 from src.config import RAW_DIR, PROCESSED_DIR, INDEX_CSV
 from src.data.archive_structure_parser import get_unzipped_directory_for_year
 from src.data.file_operation import ensure_directory_exists
-from src.data.index_query import get_sites_for_year
+from src.data.index_query import get_all_sites
 from src.data.text_transforms import rename_columns
 from src.utils.logger_config import setup_logger
 
@@ -194,7 +194,7 @@ def extract_post_2010():
         logger.info(f'Start extracting PM2.5-Speciation data of {year}')
         
         # unique site list for the year
-        site_ids = get_sites_for_year(year)
+        site_ids = get_all_sites(year=year)
         for site_id in site_ids:
             
             # get the metainfo of the site to check if NT and/or WS data exists
