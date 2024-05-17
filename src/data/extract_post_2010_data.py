@@ -86,12 +86,6 @@ def extract_PM25_vals(sheet, analyte_type):
     df = pd.DataFrame(cols, index=column_names_PM25).T.tail(-1).reset_index(drop=True)
     df.drop(range(0, header_row), inplace=True)
     
-    # For PM2.5 worksheet, 'Sample Type' (not 'Sampling Type')
-    df.rename(columns={
-        'NAPS Site ID': 'site_id', 
-        'Sampling Date': 'sampling_date', 
-        'Sample Type': 'sampling_type'}, inplace = True)
-    
     df['sampler'] = sampler
     df.reset_index(inplace=True, drop=True)
     return df
@@ -111,12 +105,6 @@ def extract_metal_vals(sheet, analyte_type):
     df.columns = df.iloc[header_idx]
     df = df.iloc[header_idx + 1:, :].reset_index(drop = True)
     df.columns.name = None
-    
-    # For metal worksheet, 'Sampling Type' (not 'Sample Type')
-    df.rename(columns={
-        'NAPS Site ID': 'site_id', 
-        'Sampling Date': 'sampling_date',
-        'Sampling Type': 'sampling_type'}, inplace = True)
     
     df['sampler'] = sampler
     df['analyte_type'] = analyte_type   
@@ -142,11 +130,6 @@ def extract_ion_2010(sheet):
     df = df.iloc[header_idx + 1:, :].reset_index(drop = True)
     df.columns.name = None
     
-    # For ion worksheet, 'Sampling Type' (not 'Sample Type')
-    df.rename(columns={
-        'NAPS Site ID': 'site_id',  
-        'Sampling Date': 'sampling_date', 
-        'Sampling Type': 'sampling_type'}, inplace = True)
     df['analyte_type'] = 'total'
     df['sampler'] = sampler
     return df

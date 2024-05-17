@@ -128,3 +128,5 @@ NAPS Site ID,site_id
 NAPS ID,site_id
 Sampling Date,sampling_date
 Date,sampling_date
+Sample Type,sampling_type
+Sampling Type,sampling_type
