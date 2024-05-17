@@ -1,12 +1,9 @@
 import datetime
 import numpy as np
-import os
 import openpyxl
 import pandas as pd
-import xlrd
 
-from src.config import DATA_URLS_FILE, INFO_URLS_FILE, RAW_DIR, METADATA_DIR, PROCESSED_DIR, \
-STATIONS_CSV, INDEX_CSV
+from src.config import RAW_DIR, PROCESSED_DIR, INDEX_CSV
 from src.data.archive_structure_parser import get_unzipped_directory_for_year
 from src.data.file_operation import ensure_directory_exists
 from src.data.index_query import get_sites_for_year
@@ -144,9 +141,6 @@ def extract_ion_2010(sheet):
     df.columns = df.iloc[header_idx]
     df = df.iloc[header_idx + 1:, :].reset_index(drop = True)
     df.columns.name = None
-    
-    # currently extract only specific ions
-    # df = df[column_ion_wanted]
     
     # For ion worksheet, 'Sampling Type' (not 'Sample Type')
     df.rename(columns={
