@@ -3,10 +3,10 @@ import numpy as np
 import openpyxl
 import pandas as pd
 
-from src.config import RAW_DIR, PROCESSED_DIR, INDEX_CSV
+from src.config import RAW_DIR, PROCESSED_DIR
 from src.data.archive_structure_parser import get_unzipped_directory_for_year
 from src.data.file_operation import ensure_directory_exists
-from src.data.index_query import get_all_sites
+from src.data.index_query import get_all_sites, get_metadata
 from src.data.text_transforms import rename_columns
 from src.utils.logger_config import setup_logger
 
@@ -20,6 +20,7 @@ column_names_PM25 = [
     'PM2.5', 'PM2.5-MDL', 'PM2.5-Vflag', 
     'Pres.', 'Temp.', 'Start Time', 'End Time', 'Actual Volume'    
 ]
+
 
 def get_file_path_post_2010(year, site_id):
     """
@@ -35,6 +36,7 @@ def get_file_path_post_2010(year, site_id):
     
     file_path = str(RAW_DIR) + '/' + unzipped_dir + '/' + file_name
     return file_path
+
 
 def find_header_row(sheet):
     """
@@ -54,6 +56,7 @@ def find_header_row(sheet):
             
         break  # should finish with only one loop
     return row_idx
+
 
 def extract_PM25_vals(sheet, analyte_type):
     """
@@ -90,6 +93,7 @@ def extract_PM25_vals(sheet, analyte_type):
     df.reset_index(inplace=True, drop=True)
     return df
 
+
 def extract_metal_vals(sheet, analyte_type):
     rows = []
     for row in sheet.iter_rows(min_row=1, max_row=sheet.max_row, min_col=1, max_col=sheet.max_column):
@@ -109,6 +113,7 @@ def extract_metal_vals(sheet, analyte_type):
     df['sampler'] = sampler
     df['analyte_type'] = analyte_type   
     return df
+
 
 def extract_ion_2010(sheet):
     '''Extract measured ion data from the file in or after 2010'''
@@ -134,6 +139,7 @@ def extract_ion_2010(sheet):
     df['sampler'] = sampler
     return df
 
+
 def extract_file(file_path, meta_df):
     """
     Extract ICP-MS measured data (metal and PM2.5) and IC measured data (ions).
@@ -149,7 +155,7 @@ def extract_file(file_path, meta_df):
     # extract metal data and PM2.5 data and combine them
     icpms_df = pd.DataFrame()
     
-    # if both NT and WS data exist, this loop is run twice; otherwise one time
+    # if both NT and WS data exist, this loop is ran twice; otherwise one time
     for index, row in meta_df.iterrows():
         
         pm25_df = extract_PM25_vals(book['PM2.5'], row['analyte_type'])
@@ -169,8 +175,8 @@ def extract_file(file_path, meta_df):
     
     return icpms_df, ic_df
 
+
 def extract_post_2010():
-    index_df = pd.read_csv(INDEX_CSV)
     
     for year in list(range(2010, 2020)):
         
@@ -181,11 +187,8 @@ def extract_post_2010():
         for site_id in site_ids:
             
             # get the metainfo of the site to check if NT and/or WS data exists
-            narrowed_index_df = index_df[(
-                index_df['year'] == year) & (
-                    index_df['site_id'] == site_id) & (
-                    (index_df['analyte_type'] == 'NT') | (index_df['analyte_type'] == 'WS'))]
-            analyte_type_index_data = narrowed_index_df[['year', 'site_id', 'analyte_type']].drop_duplicates()        
+            filtered_index_df = get_metadata(site_ids=[site_id], years=[year], instrument='ICPMS')
+            analyte_type_index_data = filtered_index_df[['year', 'site_id', 'analyte_type']].drop_duplicates()        
             
             file_path = get_file_path_post_2010(year, site_id)
             metal_df, ion_df = extract_file(file_path, analyte_type_index_data)

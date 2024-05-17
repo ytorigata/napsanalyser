@@ -138,6 +138,35 @@ def get_years_for_site(site_id, analyte, analyte_type=None):
     return unique_years_list
 
 
+def get_metadata(site_ids=None, years=None, instrument=None, analyte_type=None, analytes=None):
+    """
+    Rreturns metadata by specifying optional properties
+    - inputs:
+        - site_id: a list of NAPS site ID (int); optional
+        - year: a list of years of data (int); optional
+        - instrument: 'ICPMS' or 'IC' (string); optional
+        - analyte_type: 'NT' for Near Total metals, 'WS' for Water-soluble metals, 
+            or 'total' for ions; optional
+        - analytes: a list of full names (string) of analyte; optional
+    - output: a DataFrame filtered
+    """
+    index_df = pd.read_csv(INDEX_CSV)
+    
+    mask = pd.Series([True] * len(index_df))
+    if site_ids is not None:
+        mask = mask & (index_df['site_id'].isin(site_ids))
+    if years is not None:
+        mask = mask & (index_df['year'].isin(years))
+    if instrument is not None:
+        mask = mask & (index_df['instrument'] == instrument)
+    if analyte_type is not None:
+        mask = mask & (index_df['analyte_type'] == analyte_type)
+    if analytes is not None:
+        mask = mask & (index_df['analyte'].isin(analytes))
+    
+    return index_df[mask]
+
+
 def get_all_years_metadata(analyte, instrument, analyte_type=None, site_id=None):
     """
     Rreturns metadata for all years associated with a given analyte, instrument, 
