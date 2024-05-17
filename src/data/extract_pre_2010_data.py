@@ -86,6 +86,20 @@ def sheet_array_to_df(nested_array, site_id):
     # Note: some rows do not contain Site ID and need to be filled
     datafile.iloc[1:, datafile.columns.get_loc('NAPS ID')] = site_id
     datafile = datafile.iloc[1:, :].astype({'NAPS ID': 'int'})
+
+    # 'Cartridge' column contains information about blanks
+    # If the value is 'C', assume it is a regular measurement
+    if 'Cartridge' in datafile.columns:
+        datafile['sampling_type'] = datafile['Cartridge'].apply(
+            lambda x: 'R' if (x != 'FB') & (x != 'TB') else x)
+        datafile.drop(columns=['Cartridge'], inplace=True)
+    else:
+        datafile['sampling_type'] = 'R'
+    
+    # 'Media' column contains information about filtre types
+    # If there is no 'Media' column, assume all values were measured with Teflon filtre
+    if 'Media' not in datafile.columns:
+        datafile['Media'] = 'T' 
     
     return datafile
 
@@ -101,7 +115,7 @@ def sheet_df_to_metal_df(datafile, analyte_type):
     """
     datafile = rename_columns(datafile)
     datafile['analyte_type'] = analyte_type
-    datafile['sampler'] = None
+    datafile['sampler'] = None   
     return datafile
 
 
@@ -123,7 +137,6 @@ def sheet_df_to_ion_df(datafile):
     # datafile.columns = col_values
     
     datafile = rename_columns(datafile, COLUMN_NAMES_PRE_2010_IONS)
-    
     datafile['analyte_type'] = 'total'
     datafile['sampler'] = None
     return datafile
