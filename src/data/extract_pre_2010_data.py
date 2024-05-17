@@ -85,8 +85,8 @@ def sheet_array_to_df(nested_array, site_id):
     
     # Note: some rows do not contain Site ID and need to be filled
     datafile.iloc[1:, datafile.columns.get_loc('NAPS ID')] = site_id
-    datafile = datafile.iloc[1:, :].astype({'NAPS ID': 'int'})
-
+    datafile.iloc[1:, :] = datafile.iloc[1:, :].astype({'NAPS ID': 'int'})
+    
     # 'Cartridge' column contains information about blanks
     # If the value is 'C', assume it is a regular measurement
     if 'Cartridge' in datafile.columns:
