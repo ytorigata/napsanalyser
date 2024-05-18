@@ -5,7 +5,7 @@ import openpyxl
 import pandas as pd
 import xlrd
 
-from src.config import RAW_DIR, PROCESSED_DIR, INDEX_CSV, COLUMN_NAMES_PRE_2010_IONS
+from src.config import RAW_DIR, INTEGRATED_PM25_DIR, INDEX_CSV, COLUMN_NAMES_PRE_2010_IONS
 from src.data.file_operation import ensure_directory_exists
 from src.data.text_transforms import rename_columns
 from src.utils.logger_config import setup_logger
@@ -165,7 +165,7 @@ def extract_ICPMS_measurements(meta_df, year, site_id):
         datafile = pd.concat([datafile, metal_df], axis=0, ignore_index=True)
 
     if len(datafile) > 0:
-        datafile.to_csv(str(PROCESSED_DIR) + '/' + str(year) + '_' + str(site_id) + '.csv', index = False)
+        datafile.to_csv(str(INTEGRATED_PM25_DIR) + '/' + str(year) + '_' + str(site_id) + '.csv', index = False)
 
 
 def extract_IC_measurements(meta_df, year, site_id):
@@ -186,14 +186,14 @@ def extract_IC_measurements(meta_df, year, site_id):
         
         logger.debug(f'\t{ file_path_ion[file_path_ion.rindex("/") + 1:] }')
         
-        ion_df.to_csv(str(PROCESSED_DIR) + '/' + str(year) + '_' + str(site_id) + '_IC.csv', index = False)
+        ion_df.to_csv(str(INTEGRATED_PM25_DIR) + '/' + str(year) + '_' + str(site_id) + '_IC.csv', index = False)
 
 
 def extract_pre_2010():
     """
     Extract data between 2003 and 2009
     """
-    ensure_directory_exists(PROCESSED_DIR)
+    ensure_directory_exists(INTEGRATED_PM25_DIR)
     # unique site list for the year
     index_df = pd.read_csv(INDEX_CSV)
     unique_combinations = index_df[['year', 'site_id', 'analyte_type', 'instrument']].drop_duplicates()

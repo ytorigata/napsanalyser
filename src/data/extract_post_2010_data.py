@@ -3,7 +3,7 @@ import numpy as np
 import openpyxl
 import pandas as pd
 
-from src.config import RAW_DIR, PROCESSED_DIR
+from src.config import RAW_DIR, INTEGRATED_PM25_DIR
 from src.data.archive_structure_parser import get_unzipped_directory_for_year
 from src.data.file_operation import ensure_directory_exists
 from src.data.index_query import get_all_sites, get_metadata
@@ -196,9 +196,9 @@ def extract_post_2010():
             logger.debug(f'\t{ file_path[file_path.rindex("/") + 1:] }')
     
             if (len(metal_df) > 0):
-                metal_df.to_csv(str(PROCESSED_DIR) + '/' + str(year) + '_' + str(site_id) + '.csv', index = False)
+                metal_df.to_csv(str(INTEGRATED_PM25_DIR) + '/' + str(year) + '_' + str(site_id) + '.csv', index = False)
     
             if (len(ion_df) > 0):
-                ion_df.to_csv(str(PROCESSED_DIR) + '/' + str(year) + '_' + str(site_id) + '_IC.csv', index = False)
+                ion_df.to_csv(str(INTEGRATED_PM25_DIR) + '/' + str(year) + '_' + str(site_id) + '_IC.csv', index = False)
             
         logger.info(f'Completed extracting data of {year}')

@@ -1,5 +1,5 @@
 from pathlib import Path
-from src.config import PROCESSED_DIR
+from src.config import INTEGRATED_PM25_DIR
 
 def ensure_directory_exists(directory: Path):
     """
@@ -17,10 +17,10 @@ def get_processed_file_path(year, site_id, instrument):
         - instrument: 'ICPMS' or 'IC'
     """
     if instrument == 'ICPMS':
-        file_path = str(PROCESSED_DIR) + '/' + str(year) + '_' + str(site_id) + '.csv'
+        file_path = str(INTEGRATED_PM25_DIR) + '/' + str(year) + '_' + str(site_id) + '.csv'
         return file_path
     elif instrument == 'IC':
-        file_path = str(PROCESSED_DIR) + '/' + str(year) + '_' + str(site_id) + '_IC.csv'
+        file_path = str(INTEGRATED_PM25_DIR) + '/' + str(year) + '_' + str(site_id) + '_IC.csv'
         return file_path
     else:
         raise(f'The specified combination of year, site ID, and instrument is incorrect: {year=}, {site_id=}, {instrument=}')
