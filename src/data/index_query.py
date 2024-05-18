@@ -27,28 +27,6 @@ def get_all_analytes(site_ids=None, years=None, instrument=None):
     return analyte_list
 
 
-def get_all_ions(site_ids=None, years=None):
-    """
-    Return a list of all ion names in the index file. 
-    - inputs:
-        - site_ids: a list of site_id (int); optional
-        - years: a list of year (int); optional
-    - output: a list of ions' full names (string)
-    """
-    return get_all_analytes(site_ids, years, 'IC')
-
-
-def get_all_metals(site_ids=None, years=None):
-    """
-    Return a list of all trace metal names in the index file.
-    - inputs:
-        - site_ids: a list of site_id (int); optional
-        - years: a list of year (int); optional
-    - output: a list of metals' full names (string)
-    """
-    return get_all_analytes(site_ids, years, 'ICPMS')
-
-
 def get_all_sites(analyte=None, analyte_type=None, instrument=None, year=None):
     """
     Return a list of all site IDs.
