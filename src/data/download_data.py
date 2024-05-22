@@ -3,6 +3,8 @@ import pandas as pd
 from pathlib import Path
 import requests
 from zipfile import ZipFile
+from src.config import DATA_URLS_FILE, INFO_URLS_FILE, RAW_DIR,\
+RAW_INTEGRATED_PM25_DIR, RAW_CONTINUOUS_PM25_DIR, STATIONS_RAW_CSV
 from src.data.file_operation import ensure_directory_exists
 from src.utils.logger_config import setup_logger
 
@@ -38,23 +40,33 @@ def download_file(url, directory, fname=''):
         logger.error(
             f"Failed to download {url} to {file_path}. Status code: {response.status_code}")
 
-def download_NAPS_dataset(data_file_path, raw_data_dir):
+
+def download_continuous_dataset():
     """
-    Read URLs and years from a CSV file and download each file 
-    to a directory named by year within the base directory.
-    - inputs:
-        - data_file_path: A local file path to a CSV file (string). The file must 
-            contain columns named 'year' and 'url'.
-        - base_directory: A local directory path (string) which will be a 
-            parent directory of each year's directory to save downloaded files.
-    """
-    url_df = pd.read_csv(data_file_path)
-    ensure_directory_exists(raw_data_dir)
+    Download and save continuous PM2.5 speciation data listed in DATA_URLS_FILE
+    into a directory RAW_CONTINUOUS_PM25_DIR
+    """ 
+    url_df = pd.read_csv(DATA_URLS_FILE)
+    continuous_df = url_df[url_df['type'] == 'continuous'].copy()
+    ensure_directory_exists(RAW_CONTINUOUS_PM25_DIR)
     
-    for index, row in url_df.iterrows():
+    for index, row in continuous_df.iterrows():
+       download_file(row['url'], RAW_CONTINUOUS_PM25_DIR)
+
+
+def download_integrated_dataset():
+    """
+    Download and save continuous PM2.5 integrated data listed in DATA_URLS_FILE
+    into a directory RAW_INTEGRATED_PM25_DIR
+    """
+    url_df = pd.read_csv(DATA_URLS_FILE)
+    integrated_df = url_df[url_df['type'] == 'integrated'].copy()
+    ensure_directory_exists(RAW_INTEGRATED_PM25_DIR)
+    
+    for index, row in integrated_df.iterrows():
         # create a directory path for the year
         year = row['year']
-        year_directory = os.path.join(raw_data_dir, str(year))
+        year_directory = os.path.join(RAW_INTEGRATED_PM25_DIR, str(year))
         
         # ensure the year directory exists
         if not os.path.exists(year_directory):
@@ -62,33 +74,34 @@ def download_NAPS_dataset(data_file_path, raw_data_dir):
         
         download_file(row['url'], year_directory)
 
-def download_station_data(info_file_path, raw_data_dir, stations_raw_csv):
+
+def download_station_data():
     """
-    Download the NAPS-provided station data.
+    Download the NAPS-provided station data listed in INFO_URLS_FILE as a name of 
+    STATIONS_RAW_CSV into the directory RAW_DIR,
     - inputs:
         - info_file_path: a file path (string) to the file of the programming info files
         - raw_data_dir: a directory path (string) to the downloaded data
         - stations_raw_csv: a file name (string) to save the raw stations data.
     """
-    url_df = pd.read_csv(info_file_path)
+    url_df = pd.read_csv(INFO_URLS_FILE)
     station_file_url = url_df.loc[url_df['type'] == 'stations', ['url']].squeeze()
     
-    download_file(station_file_url, raw_data_dir, str(stations_raw_csv).split('%2F')[-1])
+    download_file(station_file_url, RAW_DIR, str(STATIONS_RAW_CSV).split('%2F')[-1])
 
-def unzip_NAPS_dataset(data_file_path, raw_data_dir):
+
+def unzip_integrated_dataset():
     """
-    Unzip downloaded data files and store them.
-    - inputs:
-        - data_file_path: a file path (strin) to the list of data files
-        - raw_data_dir: a directory path (string) to the downloaded data
+    Unzip downloaded data files listed in DATA_URLS_FILE and store them into 
+    RAW_INTEGRATED_PM25_DIR
     """
-    url_df = pd.read_csv(data_file_path)
-    years = url_df.sort_values('year')['year'].squeeze().unique()
+    url_df = pd.read_csv(DATA_URLS_FILE)
+    years = url_df.sort_values('year')['year'].unique()
     
     for year in years :
         logger.info(f'Unzip data files of year {year}: ')
         
-        target_dir = Path(str(raw_data_dir) + '/' + str(year) + '/')
+        target_dir = Path(str(RAW_INTEGRATED_PM25_DIR) + '/' + str(year) + '/')
         
         # extract file names to unzip
         urls = url_df[url_df['year'] == year]['url']

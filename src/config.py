@@ -8,7 +8,10 @@ CONFIG_DIR = DATA_DIR / 'config'
 RAW_DIR = DATA_DIR / 'raw'
 METADATA_DIR = DATA_DIR / 'metadata'
 PROCESSED_DIR = DATA_DIR / 'processed'
+RAW_INTEGRATED_PM25_DIR = RAW_DIR / 'integrated_pm25'
 INTEGRATED_PM25_DIR = PROCESSED_DIR / 'integrated_pm25'
+RAW_CONTINUOUS_PM25_DIR = RAW_DIR / 'continuous_pm25'
+CONTINUOUS_PM25_DIR = PROCESSED_DIR / 'continuous_pm25'
 OUTPUT_IMG_DIR = PROJECT_ROOT / 'output_image'
 
 # key files
