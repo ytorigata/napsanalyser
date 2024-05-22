@@ -14,11 +14,11 @@ logger = setup_logger('data.index_data', 'index_data.log')
 
 def extract_stations(stations_raw_csv, stations_csv, metadata_dir):
 
-    # read CSV while skipping the rows with index of 0, 1, 2, 4, and >788.
+    # read CSV while skipping the rows with index of 0, 1, 2, 3, 5, and >788.
     # *** CHECK the row index and update the condition 
     # when StationsNAPS-StationsSNPA.csv is updated by the ECCC (every fall) ***
     stations = pd.read_csv(stations_raw_csv, 
-                           skiprows=(lambda x: (x < 3) | (x == 4) | (x > 788)), encoding='latin-1')
+                           skiprows=(lambda x: (x < 4) | (x == 5) | (x > 790)), encoding='latin-1')
     
     # extract columns
     stations = stations[[
