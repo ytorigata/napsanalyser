@@ -5,6 +5,8 @@ import os
 import pandas as pd
 from pathlib import Path
 import xlrd
+from src.config import DATA_URLS_FILE, INDEX_CSV, RAW_INTEGRATED_PM25_DIR, \
+STATIONS_RAW_CSV, STATIONS_CSV, METADATA_DIR
 from src.data.archive_structure_parser import get_unzipped_directory_for_year
 from src.data.file_operation import ensure_directory_exists
 from src.data.text_transforms import remove_parentheses
@@ -12,13 +14,17 @@ from src.utils.logger_config import setup_logger
 
 logger = setup_logger('data.index_data', 'index_data.log')
 
-def extract_stations(stations_raw_csv, stations_csv, metadata_dir):
+def extract_stations():
+    """
+    Extract station metadata from STATIONS_RAW_CSV to STATIONS_CSV and store it 
+    into METADATA_DIR
+    """
 
     # read CSV while skipping the rows with index of 0, 1, 2, 3, 5, and >788.
     # *** CHECK the row index and update the condition 
     # when StationsNAPS-StationsSNPA.csv is updated by the ECCC (every fall) ***
-    stations = pd.read_csv(stations_raw_csv, 
-                           skiprows=(lambda x: (x < 4) | (x == 5) | (x > 790)), encoding='latin-1')
+    stations = pd.read_csv(STATIONS_RAW_CSV, 
+                           skiprows=(lambda x: (x < 4) | (x == 5) | (x > 790)), encoding='utf-8')
     
     # extract columns
     stations = stations[[
@@ -34,8 +40,8 @@ def extract_stations(stations_raw_csv, stations_csv, metadata_dir):
         'NAPS_ID': 'site_id', 'Station_Name': 'station_name', 
         'Site_Type': 'site_type', 'Land_Use': 'land_use'}, inplace=True)
 
-    ensure_directory_exists(metadata_dir)
-    stations.to_csv(stations_csv, index=False)
+    ensure_directory_exists(METADATA_DIR)
+    stations.to_csv(STATIONS_CSV, index=False, encoding='utf-8')
     
     # check if the all sites were extracted: from 10101 to 129602 (for November 2023 data)
     print('The first three stations: ')
@@ -450,9 +456,14 @@ def create_row_in_and_after_2010(item, year):
     return rows
 
 
-def index_dataset_attributes(DATA_URLS_FILE, INDEX_CSV, RAW_DIR):
+def index_dataset_attributes():
+    """
+    Create an index file INDEX_CSV to show the availability of integrated data  
+    listed in DATA_URLS_FILE. Assume the raw data are stored in RAW_INTEGRATED_PM25_DIR
+    """
     url_df = pd.read_csv(DATA_URLS_FILE)
-    years = url_df.sort_values('year')['year'].squeeze().unique()
+    integrated_df = url_df[url_df['type'] == 'integrated'].copy()
+    years = integrated_df.sort_values('year')['year'].squeeze().unique()
     
     # check the presence of the data of our interest (Near Total and Water-sluble speciation data)
     rows_list = []
@@ -461,7 +472,7 @@ def index_dataset_attributes(DATA_URLS_FILE, INDEX_CSV, RAW_DIR):
         logger.info(f'Start scanning the source directory of {year} >>>')
         
         # retrieve an unzipped directory for a particular year
-        target_dir = Path(str(RAW_DIR) + '/' + get_unzipped_directory_for_year(year))
+        target_dir = Path(str(RAW_INTEGRATED_PM25_DIR) + '/' + get_unzipped_directory_for_year(year))
         
         for item in target_dir.iterdir():
             
@@ -481,7 +492,7 @@ def index_dataset_attributes(DATA_URLS_FILE, INDEX_CSV, RAW_DIR):
     metadata_df = pd.DataFrame.from_records(rows_list)
     metadata_df.sort_values(['year', 'site_id', 'analyte'], inplace=True)
     metadata_df = metadata_df.reset_index(drop=True)
-    metadata_df.to_csv(INDEX_CSV, index=False)
+    metadata_df.to_csv(INDEX_CSV, index=False, encoding='utf-8')
 
 def apply_manually_checked_frequency(index_df, CHECKED_FREQUENCY, INDEX_CSV):
     """
@@ -544,7 +555,7 @@ def drop_entries_with_too_few_measurements(index_df, INDEX_CSV):
             (index_df['site_id'] == 60610) & 
             (index_df['analyte_type'] == 'total'))].index)
     
-    index_df.to_csv(INDEX_CSV, index=False)
+    index_df.to_csv(INDEX_CSV, index=False, encoding='utf-8')
     return index_df
 
 def update_index_with_major_frequency(index_df, INDEX_CSV):

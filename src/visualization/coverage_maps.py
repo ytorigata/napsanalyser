@@ -51,7 +51,7 @@ def visualize_coverage_by_site_and_year(analyte=''):
     - output: (display to screen)
     """
     index_df = pd.read_csv(INDEX_CSV)
-    stations = pd.read_csv(STATIONS_CSV)
+    stations = pd.read_csv(STATIONS_CSV, encoding='utf-8')
     years = index_df.sort_values('year')['year'].squeeze().unique()
     
     # select a particular analyte if specified
