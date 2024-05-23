@@ -5,7 +5,7 @@ import openpyxl
 import pandas as pd
 import xlrd
 
-from src.config import RAW_DIR, INTEGRATED_PM25_DIR, INDEX_CSV, COLUMN_NAMES_PRE_2010_IONS
+from src.config import RAW_INTEGRATED_PM25_DIR, INTEGRATED_PM25_DIR, INDEX_CSV, COLUMN_NAMES_PRE_2010_IONS
 from src.data.file_operation import ensure_directory_exists
 from src.data.text_transforms import rename_columns
 from src.utils.logger_config import setup_logger
@@ -33,7 +33,7 @@ def get_raw_file_path(year, site_id, instrument, analyte_type=None):
     else:
         file_name += '_IC.XLS'
     
-    file_path = str(RAW_DIR) + '/' + str(year) + '/SPECIATION/' + file_name
+    file_path = str(RAW_INTEGRATED_PM25_DIR) + '/' + str(year) + '/SPECIATION/' + file_name
     return file_path
 
 

@@ -3,7 +3,7 @@ import numpy as np
 import openpyxl
 import pandas as pd
 
-from src.config import RAW_DIR, INTEGRATED_PM25_DIR
+from src.config import RAW_INTEGRATED_PM25_DIR, INTEGRATED_PM25_DIR
 from src.data.archive_structure_parser import get_unzipped_directory_for_year
 from src.data.file_operation import ensure_directory_exists
 from src.data.index_query import get_all_sites, get_metadata
@@ -34,7 +34,7 @@ def get_file_path_post_2010(year, site_id):
     # after 2016, files have a suffix '_EN'
     file_name = 'S' + str(site_id) + '_PM25_' + str(year) + ('.xlsx' if year < 2016 else '_EN.xlsx')
     
-    file_path = str(RAW_DIR) + '/' + unzipped_dir + '/' + file_name
+    file_path = str(RAW_INTEGRATED_PM25_DIR) + '/' + unzipped_dir + '/' + file_name
     return file_path
 
 
