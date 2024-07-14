@@ -60,7 +60,7 @@ def download_integrated_dataset():
     into a directory RAW_INTEGRATED_PM25_DIR
     """
     url_df = pd.read_csv(DATA_URLS_FILE)
-    integrated_df = url_df[url_df['type'] == 'integrated'].copy()
+    integrated_df = url_df[url_df['type'] == 'integrated_pm25'].copy()
     ensure_directory_exists(RAW_INTEGRATED_PM25_DIR)
     
     for index, row in integrated_df.iterrows():
