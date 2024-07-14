@@ -111,8 +111,15 @@ def unzip_integrated_dataset():
         for item in target_dir.iterdir():
             # unzip files listed in the CSV, skipping any other zip files
             if (item.name.endswith('.zip')) & (item.name in filenames):
+
+                extracted_dir = target_dir
+                
+                # VOC data of 2013 are archived without a directory, so put it into a directory
+                if (year == 2013) & ('VOC' in item.name):
+                    extracted_dir = str(extracted_dir) + '/VOC/'
+                
                 with ZipFile(item, 'r') as f:
-                    f.extractall(target_dir)
+                    f.extractall(extracted_dir)
                 
                 # for logging
                 item_str = str(item)
