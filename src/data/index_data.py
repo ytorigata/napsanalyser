@@ -462,7 +462,7 @@ def index_dataset_attributes():
     listed in DATA_URLS_FILE. Assume the raw data are stored in RAW_INTEGRATED_PM25_DIR
     """
     url_df = pd.read_csv(DATA_URLS_FILE)
-    integrated_df = url_df[url_df['type'] == 'integrated'].copy()
+    integrated_df = url_df[url_df['type'] == 'integrated_pm25'].copy()
     years = integrated_df.sort_values('year')['year'].squeeze().unique()
     
     # check the presence of the data of our interest (Near Total and Water-sluble speciation data)
