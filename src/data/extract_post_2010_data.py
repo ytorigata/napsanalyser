@@ -4,7 +4,7 @@ import openpyxl
 import pandas as pd
 
 from src.config import RAW_INTEGRATED_PM25_DIR, INTEGRATED_PM25_DIR
-from src.data.archive_structure_parser import get_unzipped_directory_for_year
+from src.data.archive_structure_parser import get_unzipped_directory_for_year, get_unzipped_file
 from src.data.file_operation import ensure_directory_exists
 from src.data.index_query import get_all_sites, get_metadata
 from src.data.text_transforms import rename_columns
@@ -22,18 +22,17 @@ column_names_PM25 = [
 ]
 
 
-def get_file_path_post_2010(year, site_id):
+def get_file_path_post_2010(year, site_id, species_category=None):
     """
     Return a file path to extract data, which is different depending on the year.
     - inputs: 
         - year: year of the data (int)
         - site_id: NAPS site ID (int)
+        - species_category: optional. carbonyl, pah, or voc (string)
     - output: file_path (string)
     """
-    unzipped_dir = get_unzipped_directory_for_year(year)
-    # after 2016, files have a suffix '_EN'
-    file_name = 'S' + str(site_id) + '_PM25_' + str(year) + ('.xlsx' if year < 2016 else '_EN.xlsx')
-    
+    unzipped_dir = get_unzipped_directory_for_year(year, species_category)
+    file_name = get_unzipped_file(year, site_id, species_category)
     file_path = str(RAW_INTEGRATED_PM25_DIR) + '/' + unzipped_dir + '/' + file_name
     return file_path
 
