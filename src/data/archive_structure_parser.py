@@ -45,17 +45,38 @@ def get_unzipped_directory_for_year(year, species_category=None):
     the zip file was created by the ECCC, so they differ across years.
     - input:
         - year: year of data (int)
-        - species_category: optional. carbonyl, pah, or voc (string)
+        - species_category: optional. bbm, carbonyl, pah, or voc (string)
     - output: directory path (string) to files
     '''
     if species_category is None:
         return get_unzipped_dir_for_pm25speciation(year)
+        
+    elif species_category == 'bbm':
+        # bbm (Biomass burning markers) can be obtained from the same directory as PM2.5 speciation
+        return get_unzipped_dir_for_pm25speciation(year)
+        
     elif species_category == 'carbonyl':
         return get_unzipped_dir_for_carbonyl(year)
+        
     elif species_category == 'pah':
         return get_unzipped_dir_for_pah(year)
+        
     elif species_category == 'voc':
         return get_unzipped_dir_for_voc(year)
+
+
+def get_unzipped_file_for_bbm(year, site_id):
+    # bbm: Biomass Burning Markers
+    file_name = ''
+    
+    if year < 2010:
+        file_name = f'S{site_id}_LEV.XLS'
+    elif year < 2016:
+        file_name = f'S{site_id}_PM25_{year}.xlsx'
+    else:
+        file_name = f'S{site_id}_PM25_{year}_EN.xlsx'
+        
+    return file_name
 
 
 def get_unzipped_file_for_carbonyl(year, site_id):
@@ -137,14 +158,17 @@ def get_unzipped_file(year, site_id, species_category=None):
     - input:
         - year: year of data (int)
         - site_id: NAPS site ID (int)
-        - species_category: optional. carbonyl, pah, or voc (string)
+        - species_category: optional. bbm, carbonyl, pah, or voc (string)
     - output: a file name (string)
     """
     file_name = ''
     
     if species_category is None:
         file_name = get_unzipped_file_for_pm25speciation(year, site_id)
-            
+
+    elif species_category == 'bbm':
+        file_name = get_unzipped_file_for_bbm(year, site_id)
+        
     elif species_category == 'carbonyl':
         file_name = get_unzipped_file_for_carbonyl(year, site_id)
                 
