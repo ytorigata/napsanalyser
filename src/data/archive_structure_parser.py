@@ -45,14 +45,14 @@ def get_unzipped_directory_for_year(year, species_category=None):
     the zip file was created by the ECCC, so they differ across years.
     - input:
         - year: year of data (int)
-        - species_category: optional. bbm, carbonyl, pah, or voc (string)
+        - species_category: optional. bbm, carbonyl, ocec, pah, or voc (string)
     - output: directory path (string) to files
     '''
-    if species_category is None:
-        return get_unzipped_dir_for_pm25speciation(year)
+    if (species_category is None) | (species_category in ['bbm', 'ocec']) :
         
-    elif species_category == 'bbm':
-        # bbm (Biomass burning markers) can be obtained from the same directory as PM2.5 speciation
+        # bbm (biomass burning markers) and OC/EC (organic carbon and elemental carbon)
+        # are obtained from the same directory as PM2.5 speciation
+        
         return get_unzipped_dir_for_pm25speciation(year)
         
     elif species_category == 'carbonyl':
@@ -89,6 +89,20 @@ def get_unzipped_file_for_carbonyl(year, site_id):
         # zero padding for 5-digit site IDs
         file_name = f'S0{site_id}_CARBONYLS_{year}_EN.xlsx' if site_id < 100000 else f'S{site_id}_CARBONYLS_{year}_EN.xlsx'
     
+    return file_name
+
+
+def get_unzipped_file_for_ocec(year, site_id):
+    # ocec: organic carbon and elemental carbon
+    file_name = ''
+    
+    if year < 2010:
+        file_name = f'S{site_id}_CARB.XLS'
+    elif year < 2016:
+        file_name = f'S{site_id}_PM25_{year}.xlsx'
+    else:
+        file_name = f'S{site_id}_PM25_{year}_EN.xlsx'
+        
     return file_name
 
 
@@ -158,7 +172,7 @@ def get_unzipped_file(year, site_id, species_category=None):
     - input:
         - year: year of data (int)
         - site_id: NAPS site ID (int)
-        - species_category: optional. bbm, carbonyl, pah, or voc (string)
+        - species_category: optional. bbm, carbonyl, ocec, pah, or voc (string)
     - output: a file name (string)
     """
     file_name = ''
@@ -171,6 +185,9 @@ def get_unzipped_file(year, site_id, species_category=None):
         
     elif species_category == 'carbonyl':
         file_name = get_unzipped_file_for_carbonyl(year, site_id)
+
+    elif species_category == 'ocec':
+        file_name = get_unzipped_file_for_ocec(year, site_id)
                 
     elif species_category == 'pah':
         file_name = get_unzipped_file_for_pah(year, site_id)
