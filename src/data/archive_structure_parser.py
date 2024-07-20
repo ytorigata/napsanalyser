@@ -1,6 +1,8 @@
 
 def get_unzipped_dir_for_carbonyl(year):
-    if year < 2016:
+    if year < 22:
+        return str(year) + '/VOC'
+    elif year < 2016:
         return str(year) + '/CARBONYLS'
     else:
         return str(year) + '/CARBONYLS-CARBONYLES-HAP'
@@ -113,8 +115,11 @@ def get_unzipped_file_for_pah(year, site_id):
         file_name = f'S{site_id}_PAH.XLS'
     elif year < 2016:
         file_name = f'S{site_id}_PAH_{year}.xlsx'
-    else:
+    elif year < 2019:
         file_name = f'S{site_id}_PAH_{year}_EN.xlsx'
+    else:
+        # zero padding for 5-digit site IDs
+        file_name = f'S0{site_id}_PAH_{year}_EN.xlsx' if site_id < 100000 else f'S{site_id}_PAH_{year}_EN.xlsx'
     
     return file_name
 
