@@ -12,13 +12,31 @@ def convert_micro_to_nano(df, columns):
     - inputs:
         - df: a DataFrame
         - columns: a list of column names (string)
-    - output: converted_df: a DataFrame with columns which have converted units
+    - output: df: a DataFrame with columns which have converted units
     """
-    converted_df = pd.DataFrame(df)
-    for col in columns:
-        tmp_df = df[col] * 10 ** 3
-        converted_df.loc[:, [col]] = tmp_df
-    return converted_df
+    conversion_factor = 10 ** 3
+    df[columns] = df[columns].apply(lambda x: x * conversion_factor)
+    return df
+
+
+def formalise_columns(df, mapping):
+    """
+    Rename columns by mapping various old names to a single new name.
+    - inputs:
+        - df: a DataFrame containing column names to rename
+        - mapping: a dictionary with keys which are new column names and 
+            values which are (various old) column names 
+    - output: df: a DataFrame with renamed columns
+    """
+    # create a reverse mapping dictionary
+    reverse_mapping = {}
+    for key, values in mapping.items():
+        for value in values:
+            reverse_mapping[value] = key
+
+    # rename columns using the reverse mapping
+    df.rename(columns=reverse_mapping, inplace=True)
+    return df
 
 
 def get_abbreviation_dict():
@@ -74,4 +92,5 @@ def rename_columns(df, TEMPLATE=COLUMN_NAMES):
     dict_col = dict(zip(col_names_df.old_name, col_names_df.new_name))
     renamed_df = df.rename(columns=dict_col, errors = 'ignore')
     return renamed_df
+
 
