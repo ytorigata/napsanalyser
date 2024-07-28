@@ -16,6 +16,9 @@
 2017,integrated_pm25,https://data-donnees.az.ec.gc.ca/api/file?path=/air%2Fmonitor%2Fnational-air-pollution-surveillance-naps-program%2FData-Donnees%2F2017%2FIntegratedData-DonneesPonctuelles%2F2017_IntegratedPM2.5-PM2.5Ponctuelles.zip
 2018,integrated_pm25,https://data-donnees.az.ec.gc.ca/api/file?path=/air%2Fmonitor%2Fnational-air-pollution-surveillance-naps-program%2FData-Donnees%2F2018%2FIntegratedData-DonneesPonctuelles%2F2018_IntegratedPM2.5-PM2.5Ponctuelles.zip
 2019,integrated_pm25,https://data-donnees.az.ec.gc.ca/api/file?path=/air%2Fmonitor%2Fnational-air-pollution-surveillance-naps-program%2FData-Donnees%2F2019%2FIntegratedData-DonneesPonctuelles%2F2019_IntegratedPM2.5-PM2.5Ponctuelles.zip
+2020,integrated_pm25,https://data-donnees.az.ec.gc.ca/api/file?path=/air%2Fmonitor%2Fnational-air-pollution-surveillance-naps-program%2FData-Donnees%2F2020%2FIntegratedData-DonneesPonctuelles%2F2020_IntegratedPM2.5-PM2.5Ponctuelles.zip
+2021,integrated_pm25,https://data-donnees.az.ec.gc.ca/api/file?path=/air%2Fmonitor%2Fnational-air-pollution-surveillance-naps-program%2FData-Donnees%2F2021%2FIntegratedData-DonneesPonctuelles%2F2021_IntegratedPM2.5-PM2.5Ponctuelles.zip
+2022,integrated_pm25,https://data-donnees.az.ec.gc.ca/api/file?path=/air%2Fmonitor%2Fnational-air-pollution-surveillance-naps-program%2FData-Donnees%2F2022%2FIntegratedData-DonneesPonctuelles%2F2022_IntegratedPM2.5-PM2.5Ponctuelles.zip
 2014,integrated_caebonyls,https://data-donnees.az.ec.gc.ca/api/file?path=/air%2Fmonitor%2Fnational-air-pollution-surveillance-naps-program%2FData-Donnees%2F2014%2FIntegratedData-DonneesPonctuelles%2F2014_CARBONYLS.zip
 2015,integrated_caebonyls,https://data-donnees.az.ec.gc.ca/api/file?path=/air%2Fmonitor%2Fnational-air-pollution-surveillance-naps-program%2FData-Donnees%2F2015%2FIntegratedData-DonneesPonctuelles%2F2015_CARBONYLS.zip
 2016,integrated_caebonyls,https://data-donnees.az.ec.gc.ca/api/file?path=/air%2Fmonitor%2Fnational-air-pollution-surveillance-naps-program%2FData-Donnees%2F2016%2FIntegratedData-DonneesPonctuelles%2F2016_CARBONYLS-CARBONYLES.zip
@@ -39,6 +42,9 @@
 2017,integrated_pah,https://data-donnees.az.ec.gc.ca/api/file?path=/air%2Fmonitor%2Fnational-air-pollution-surveillance-naps-program%2FData-Donnees%2F2017%2FIntegratedData-DonneesPonctuelles%2F2017_PAH-HAP.zip
 2018,integrated_pah,https://data-donnees.az.ec.gc.ca/api/file?path=/air%2Fmonitor%2Fnational-air-pollution-surveillance-naps-program%2FData-Donnees%2F2018%2FIntegratedData-DonneesPonctuelles%2F2018_PAH-HAP.zip
 2019,integrated_pah,https://data-donnees.az.ec.gc.ca/api/file?path=/air%2Fmonitor%2Fnational-air-pollution-surveillance-naps-program%2FData-Donnees%2F2019%2FIntegratedData-DonneesPonctuelles%2F2019_PAH-HAP.zip
+2020,integrated_pah,https://data-donnees.az.ec.gc.ca/api/file?path=/air%2Fmonitor%2Fnational-air-pollution-surveillance-naps-program%2FData-Donnees%2F2020%2FIntegratedData-DonneesPonctuelles%2F2020_PAH-HAP.zip
+2021,integrated_pah,https://data-donnees.az.ec.gc.ca/api/file?path=/air%2Fmonitor%2Fnational-air-pollution-surveillance-naps-program%2FData-Donnees%2F2021%2FIntegratedData-DonneesPonctuelles%2F2021_PAH-HAP.zip
+2022,integrated_pah,https://data-donnees.az.ec.gc.ca/api/file?path=/air%2Fmonitor%2Fnational-air-pollution-surveillance-naps-program%2FData-Donnees%2F2022%2FIntegratedData-DonneesPonctuelles%2F2022_PAH-HAP.zip
 2003,integrated_voc,https://data-donnees.az.ec.gc.ca/api/file?path=/air%2Fmonitor%2Fnational-air-pollution-surveillance-naps-program%2FData-Donnees%2F2003%2FIntegratedData-DonneesPonctuelles%2F2003VOC.zip
 2004,integrated_voc,https://data-donnees.az.ec.gc.ca/api/file?path=/air%2Fmonitor%2Fnational-air-pollution-surveillance-naps-program%2FData-Donnees%2F2004%2FIntegratedData-DonneesPonctuelles%2F2004VOC.zip
 2005,integrated_voc,https://data-donnees.az.ec.gc.ca/api/file?path=/air%2Fmonitor%2Fnational-air-pollution-surveillance-naps-program%2FData-Donnees%2F2005%2FIntegratedData-DonneesPonctuelles%2F2005VOC.zip
@@ -56,6 +62,9 @@
 2017,integrated_voc,https://data-donnees.az.ec.gc.ca/api/file?path=/air%2Fmonitor%2Fnational-air-pollution-surveillance-naps-program%2FData-Donnees%2F2017%2FIntegratedData-DonneesPonctuelles%2F2017_VOC-COV.zip
 2018,integrated_voc,https://data-donnees.az.ec.gc.ca/api/file?path=/air%2Fmonitor%2Fnational-air-pollution-surveillance-naps-program%2FData-Donnees%2F2018%2FIntegratedData-DonneesPonctuelles%2F2018_VOC-COV.zip
 2019,integrated_voc,https://data-donnees.az.ec.gc.ca/api/file?path=/air%2Fmonitor%2Fnational-air-pollution-surveillance-naps-program%2FData-Donnees%2F2019%2FIntegratedData-DonneesPonctuelles%2F2019_VOC-COV.zip
+2020,integrated_voc,https://data-donnees.az.ec.gc.ca/api/file?path=/air%2Fmonitor%2Fnational-air-pollution-surveillance-naps-program%2FData-Donnees%2F2020%2FIntegratedData-DonneesPonctuelles%2F2020_VOC-COV.zip
+2021,integrated_voc,https://data-donnees.az.ec.gc.ca/api/file?path=/air%2Fmonitor%2Fnational-air-pollution-surveillance-naps-program%2FData-Donnees%2F2021%2FIntegratedData-DonneesPonctuelles%2F2021_VOC-COV.zip
+2022,integrated_voc,https://data-donnees.az.ec.gc.ca/api/file?path=/air%2Fmonitor%2Fnational-air-pollution-surveillance-naps-program%2FData-Donnees%2F2022%2FIntegratedData-DonneesPonctuelles%2F2022_VOC-COV.zip
 2003,continuous,https://data-donnees.az.ec.gc.ca/api/file?path=/air%2Fmonitor%2Fnational-air-pollution-surveillance-naps-program%2FData-Donnees%2F2003%2FContinuousData-DonneesContinu%2FHourlyData-DonneesHoraires%2FPM25_2003.csv
 2004,continuous,https://data-donnees.az.ec.gc.ca/api/file?path=/air%2Fmonitor%2Fnational-air-pollution-surveillance-naps-program%2FData-Donnees%2F2004%2FContinuousData-DonneesContinu%2FHourlyData-DonneesHoraires%2FPM25_2004.csv
 2005,continuous,https://data-donnees.az.ec.gc.ca/api/file?path=/air%2Fmonitor%2Fnational-air-pollution-surveillance-naps-program%2FData-Donnees%2F2005%2FContinuousData-DonneesContinu%2FHourlyData-DonneesHoraires%2FPM25_2005.csv
@@ -73,3 +82,6 @@
 2017,continuous,https://data-donnees.az.ec.gc.ca/api/file?path=/air%2Fmonitor%2Fnational-air-pollution-surveillance-naps-program%2FData-Donnees%2F2017%2FContinuousData-DonneesContinu%2FHourlyData-DonneesHoraires%2FPM25_2017.csv
 2018,continuous,https://data-donnees.az.ec.gc.ca/api/file?path=/air%2Fmonitor%2Fnational-air-pollution-surveillance-naps-program%2FData-Donnees%2F2018%2FContinuousData-DonneesContinu%2FHourlyData-DonneesHoraires%2FPM25_2018.csv
 2019,continuous,https://data-donnees.az.ec.gc.ca/api/file?path=/air%2Fmonitor%2Fnational-air-pollution-surveillance-naps-program%2FData-Donnees%2F2019%2FContinuousData-DonneesContinu%2FHourlyData-DonneesHoraires%2FPM25_2019.csv
+2020,continuous,https://data-donnees.az.ec.gc.ca/api/file?path=/air%2Fmonitor%2Fnational-air-pollution-surveillance-naps-program%2FData-Donnees%2F2020%2FContinuousData-DonneesContinu%2FHourlyData-DonneesHoraires%2FPM25_2020.csv
+2021,continuous,https://data-donnees.az.ec.gc.ca/api/file?path=/air%2Fmonitor%2Fnational-air-pollution-surveillance-naps-program%2FData-Donnees%2F2021%2FContinuousData-DonneesContinu%2FHourlyData-DonneesHoraires%2FPM25_2021.csv
+2022,continuous,https://data-donnees.az.ec.gc.ca/api/file?path=/air%2Fmonitor%2Fnational-air-pollution-surveillance-naps-program%2FData-Donnees%2F2022%2FContinuousData-DonneesContinu%2FHourlyData-DonneesHoraires%2FPM25_2022.csv
