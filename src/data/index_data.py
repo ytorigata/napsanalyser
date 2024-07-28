@@ -20,11 +20,11 @@ def extract_stations():
     into METADATA_DIR
     """
 
-    # read CSV while skipping the rows with index of 0, 1, 2, 3, 5, and >788.
+    # read CSV while skipping the rows with index of 0, 1, 2, 3, 5, and >792 (from Definitions)
     # *** CHECK the row index and update the condition 
-    # when StationsNAPS-StationsSNPA.csv is updated by the ECCC (every fall) ***
+    # when StationsNAPS-StationsSNPA.csv is updated ***
     stations = pd.read_csv(STATIONS_RAW_CSV, 
-                           skiprows=(lambda x: (x < 4) | (x == 5) | (x > 790)), encoding='utf-8')
+                           skiprows=(lambda x: (x < 4) | (x == 5) | (x > 792)), encoding='utf-8')
     
     # extract columns
     stations = stations[[
@@ -497,6 +497,7 @@ def index_dataset_attributes():
 def apply_manually_checked_frequency(index_df, CHECKED_FREQUENCY, INDEX_CSV):
     """
     Correct the index CSV by applying manually-checked frequency data.
+    Note: Site 129303 is reported the frequency is 1 in 6 days even though the actual data points are not quite so.
     - inputs:
         - index_df: a DataFrame which is the lodaded index CSV
         - CHECKED_FREQUENCY: the file path to the CSV file containing correct frequencies
